@@ -1,4 +1,5 @@
 import { getStore } from "@/app/api/stores/route";
+import Navbar from "@/components/navbar";
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation";
 
@@ -24,7 +25,7 @@ export default async function DashboardLayout({
     return (
         <>
             <div>
-                This will be a Navbar
+                <Navbar />
                 {children}
             </div>
         </>
