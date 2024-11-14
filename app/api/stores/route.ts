@@ -73,3 +73,27 @@ export async function GET(req: Request) {
         return new NextResponse("Internal error", { status: 500 });
     }
 }
+
+export async function getStore(userId: string, storeId?: string) {
+    let query = supabase
+        .from('stores')
+        .select('*');
+
+    // Agrega el filtro de `userId`
+    query = query.eq('user_id', userId);
+
+    // Agrega el filtro de `storeId` solo si se proporciona
+    if (storeId) {
+        query = query.eq('id', storeId);
+    }
+
+    // Usa `single()` si estás buscando un solo resultado específico, o `limit(1)` para el caso general
+    const { data, error } = storeId ? await query.single() : await query.limit(1).maybeSingle();
+
+    if (error) {
+        console.error('Error fetching store:', error.message);
+        return null;
+    }
+
+    return data;
+}

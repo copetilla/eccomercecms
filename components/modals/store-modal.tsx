@@ -12,6 +12,7 @@ import { Modal } from "@/components/ui/modal"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import toast from 'react-hot-toast'
 
 const formSchema = z.object({
     name: z.string().min(1)
@@ -43,13 +44,15 @@ export const StoreModal = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create store');
+                throw new Error();
             }
 
             const data = await response.json();
-            console.log(data);
+            toast.success('¡Tienda creada!')
+
+            window.location.assign(`/${data.id}`)
         } catch (error) {
-            console.log('aqui es el error', error);
+            toast.error('Error al crear la tienda')
         } finally {
             setLoading(false);
         }
@@ -72,7 +75,7 @@ export const StoreModal = () => {
                                 render={({ field }) => (
 
                                     <FormItem>
-                                        <FormLabel>Name</FormLabel>
+                                        <FormLabel>Nombre</FormLabel>
                                         <FormControl>
                                             <Input
                                                 disabled={loading}
@@ -84,8 +87,8 @@ export const StoreModal = () => {
                                 )}
                             />
                             <div className=' pt-6 space-x-2 flex items-center justify-end w-full'>
-                                <Button disabled={loading} variant={'outline'}>Cancel</Button>
-                                <Button disabled={loading} type='submit'>Continue</Button>
+                                <Button disabled={loading} variant={'outline'}>Cancelar</Button>
+                                <Button disabled={loading} type='submit'>Continuar</Button>
                             </div>
                         </form>
                     </Form>
