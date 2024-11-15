@@ -1,11 +1,8 @@
 import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
 import { supabaseClient } from "@/lib/supabase"
-import toast from "react-hot-toast"
 
-export async function POST(
-    req: Request
-) {
+export async function POST(req: Request) {
     try {
         const { userId, getToken } = await auth()
         const token = await getToken({ template: 'supabase' })
@@ -62,8 +59,6 @@ export async function GET(req: Request) {
         let { data: stores, error } = await supabase
             .from('stores')
             .select('*')
-
-        console.log("Data:", stores);  // Verificar la respuesta de la consulta
 
         if (error) {
             console.error('[STORES_GET_ERROR]', error);
@@ -122,4 +117,26 @@ export async function getAllStoresUser(userId: string) {
     }
 
     return data;
+}
+
+export async function updateStore(name: string, storeId: string) {
+    const { userId, getToken } = await auth()
+    if (!userId) {
+        return null
+    }
+    const token = await getToken({ template: 'supabase' })
+    const supabase = await supabaseClient(token)
+
+    const { data, error } = await supabase
+        .from('stores')
+        .update({ 'name': name })
+        .eq('id', storeId)
+        .select()
+
+    if (error) {
+        console.log(error)
+        return null
+    }
+
+    return data
 }
