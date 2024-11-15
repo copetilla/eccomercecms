@@ -4,3 +4,4 @@ export interface Store {
     user_id: string;
     created_at: string;
 }
+

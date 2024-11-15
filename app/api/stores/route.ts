@@ -1,12 +1,14 @@
 import { auth } from "@clerk/nextjs/server"
 import { NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabaseClient } from "@/lib/supabase"
+import toast from "react-hot-toast"
 
 export async function POST(
     req: Request
 ) {
     try {
-        const { userId } = await auth()
+        const { userId, getToken } = await auth()
+        const token = await getToken({ template: 'supabase' })
         const body = await req.json()
 
         const { name } = body
@@ -20,6 +22,7 @@ export async function POST(
         }
 
         // Crear la tienda en Supabase
+        const supabase = await supabaseClient(token)
         const { data, error } = await supabase
             .from('stores')
             .insert([
@@ -45,7 +48,8 @@ export async function POST(
 export async function GET(req: Request) {
     try {
         // Obtener el userId del usuario autenticado
-        const { userId } = await auth();
+        const { userId, getToken } = await auth();
+        const token = await getToken({ template: 'supabase' })
 
         console.log("userId:", userId);  // Verificar el valor de userId
 
@@ -54,7 +58,7 @@ export async function GET(req: Request) {
         }
 
         // Obtener las tiendas del usuario desde Supabase
-
+        const supabase = await supabaseClient(token)
         let { data: stores, error } = await supabase
             .from('stores')
             .select('*')
@@ -75,6 +79,10 @@ export async function GET(req: Request) {
 }
 
 export async function getStore(userId: string, storeId?: string) {
+    const { getToken } = await auth()
+    const token = await getToken({ template: 'supabase' })
+    const supabase = await supabaseClient(token)
+
     let query = supabase
         .from('stores')
         .select('*');
@@ -93,6 +101,24 @@ export async function getStore(userId: string, storeId?: string) {
     if (error) {
         console.error('Error fetching store:', error.message);
         return null;
+    }
+
+    return data;
+}
+
+export async function getAllStoresUser(userId: string) {
+    const { getToken } = await auth()
+    const token = await getToken({ template: 'supabase' })
+    const supabase = await supabaseClient(token)
+
+    const { data, error } = await supabase
+        .from('stores')
+        .select('*')
+        .eq('user_id', userId)
+
+    if (error) {
+        console.log(error)
+        return null
     }
 
     return data;
