@@ -65,6 +65,8 @@ export async function DELETE(req: Request, { params }: { params: { storeId: stri
             return new NextResponse('Error');
         }
 
+        return new NextResponse('Store deleted successfully', { status: 200 });
+
     } catch (error) {
         console.log('[STORE_DELETE]', error)
         return new NextResponse('Internal error', { status: 500 });

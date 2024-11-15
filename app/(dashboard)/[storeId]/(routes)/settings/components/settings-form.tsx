@@ -14,6 +14,7 @@ import { Separator } from '@/components/ui/separator'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import toast from 'react-hot-toast'
+import AlertModal from '@/components/modals/alert-modal'
 
 interface SettingsFormProps {
     store: Store
@@ -64,8 +65,41 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ store }) => {
         }
 
     }
+
+    const onDelete = async () => {
+        try {
+            setLoading(true)
+
+            const response = await fetch(`/api/stores/${params.storeId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error();
+            }
+
+            router.refresh()
+            router.push('/')
+            toast.success("Tienda eliminada")
+
+        } catch (error) {
+            toast.error("Asegurate que no tengas ninguna cateogira ni productos en la tienda")
+        } finally {
+            setLoading(false)
+            setOpen(false)
+        }
+    }
     return (
         <>
+            <AlertModal
+                isOpen={open}
+                onClose={() => { setOpen(false) }}
+                onConfirm={onDelete}
+                loading={loading}
+            />
             <div className='flex items-center justify-between'>
                 <Heading
                     title='Configuraciones'
