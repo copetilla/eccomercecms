@@ -87,3 +87,27 @@ export async function POST(req: NextRequest) {
         );
     }
 }
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const { userId, getToken } = await auth()
+
+        const token = await getToken({ template: 'supabase' })
+        const supabase = await supabaseClient(token)
+        const { fileName } = await req.json()
+
+        const { data, error } = await supabase
+            .storage
+            .from('billboards_background')
+            .remove(fileName)
+
+        if (error) {
+            throw new Error('Error eliminando el archivo ', error)
+        }
+
+        return NextResponse.json({ message: 'Archivo eliminado', data })
+    } catch (error) {
+        console.error('Error al eliminar el archivo:', error);
+        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    }
+}

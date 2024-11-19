@@ -30,7 +30,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange, s
 
         loadImages()
 
-    }, [images])
+    }, [reloadImages])
 
 
 
@@ -59,6 +59,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange, s
             const data = await response.json();
             setImages((prevImages) => [...prevImages, data.publicUrl])
 
+            setReloadImages(!reloadImages)
+
             console.log(data); // Muestra la respuesta devuelta por la API
         } catch (error) {
             console.error('Error en la solicitud:', error);
@@ -72,7 +74,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange, s
     return (
         <div>
             <div className="mb-4 flex items-center gap-4">
-                <ImageCard images={images} />
+                <ImageCard images={images} reloadImages={setReloadImages} />
             </div>
             <div>
                 <label htmlFor='file-input' className="cursor-pointer flex space-x-2 items-center justify-center w-full h-10 rounded-md bg-gray-200 hover:bg-gray-300">
