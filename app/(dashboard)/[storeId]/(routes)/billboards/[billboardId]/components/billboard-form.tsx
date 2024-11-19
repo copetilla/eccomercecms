@@ -36,7 +36,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     const router = useRouter();
     const origin = useOrigin();
 
-    const [imageFile, setImageFile] = useState(null)
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -54,26 +53,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     });
 
     const onSubmit = async (data: BillboardFormValues) => {
-        const formData = new FormData();
-
-        if (imageFile) {
-            formData.append('file', imageFile); // Agregar el archivo al FormData
-        }
-        formData.append('label', data.label); // Agregar el texto de la etiqueta
-
-        // Realizar la solicitud POST al backend
-        const response = await fetch('/api/stores/upload-image', {
-            method: 'POST',
-            body: formData,
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            console.log('Imagen subida correctamente', result);
-            router.push('/path-to-somewhere'); // Redirigir después de la carga
-        } else {
-            console.error('Error al cargar la imagen');
-        }
+        console.log(data)
     }
 
     return (
@@ -120,7 +100,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                                         <ImageUploader
                                             value={field.value}
                                             onchange={(imageUrl) => field.onChange(imageUrl)}
-                                            setImageFile={setImageFile}
                                         />
                                     </FormControl>
                                     <FormMessage />

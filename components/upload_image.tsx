@@ -6,13 +6,13 @@ import ImageCard from '@/components/image-card';
 interface ImageUploaderProps {
     value: string;
     onchange: (value: string) => void
-    setImageFile: any
 }
 
-export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange, setImageFile }) => {
+export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const [selected, setSelected] = useState(value)
     const [images, setImages] = useState<string[]>([]);
-    const [reloadImages, setReloadImages] = useState<boolean>(false); // Estado para forzar re-fetch de imágenes
+    const [reloadImages, setReloadImages] = useState<boolean>(false);
 
 
     useEffect(() => {
@@ -32,7 +32,9 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange, s
 
     }, [reloadImages])
 
-
+    useEffect(() => {
+        onchange(selected)
+    }, [selected])
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
@@ -67,14 +69,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange, s
         }
     }
 
-    const handleRemoveImage = () => {
-
-    };
-
     return (
         <div>
             <div className="mb-4 flex items-center gap-4">
-                <ImageCard images={images} reloadImages={setReloadImages} />
+                <ImageCard images={images} reloadImages={setReloadImages} selected={selected} setSelected={setSelected} />
             </div>
             <div>
                 <label htmlFor='file-input' className="cursor-pointer flex space-x-2 items-center justify-center w-full h-10 rounded-md bg-gray-200 hover:bg-gray-300">

@@ -1,15 +1,18 @@
-import React from 'react'
+import React, { SetStateAction } from 'react'
 import { Button } from '@/components/ui/button'
 import { Trash } from 'lucide-react'
 import Image from 'next/image'
+import { cn } from '@/lib/utils'
 
 
 interface ImageCardProps {
     images: string[]
-    reloadImages: any
+    reloadImages: (value: boolean) => void
+    selected: string
+    setSelected: React.Dispatch<SetStateAction<string>>
 }
 
-const ImageCard = ({ images, reloadImages }: ImageCardProps) => {
+const ImageCard = ({ images, reloadImages, selected, setSelected }: ImageCardProps) => {
 
     const DeleteImage = async (src: string) => {
 
@@ -37,13 +40,18 @@ const ImageCard = ({ images, reloadImages }: ImageCardProps) => {
 
         }
     }
+
+    const onClickImage = (src: string) => {
+        setSelected(src)
+    }
     return (
         <>
             {images.map((src) => (
-                <div className="relative w-[200px] h-[200px] rounded-md overflow-hidden">
+                <div className={cn(' relative w-[200px] h-[200px] rounded-md overflow-hidden', {
+                    'border-4 border-violet-500': selected === src,
+                })}>
                     <div className="z-10 absolute top-2 right-2">
                         <Button
-
                             type="button"
                             variant="destructive"
                             onClick={() => DeleteImage(src)}
@@ -53,9 +61,10 @@ const ImageCard = ({ images, reloadImages }: ImageCardProps) => {
                     </div>
                     <Image
                         fill
-                        className="object-cover"
+                        className="object-cover cursor-pointer"
                         alt="Image"
                         src={src}
+                        onClick={() => onClickImage(src)}
                     />
                 </div>
             ))}
