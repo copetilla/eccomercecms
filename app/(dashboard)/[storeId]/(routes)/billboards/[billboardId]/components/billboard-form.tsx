@@ -36,6 +36,8 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     const router = useRouter();
     const origin = useOrigin();
 
+    const { storeId, billboardId } = params
+
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -53,7 +55,77 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     });
 
     const onSubmit = async (data: BillboardFormValues) => {
-        console.log(data)
+        if (billboard) {
+
+            try {
+
+                const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ label: data.label, imageUrl: data.imageUrl })
+                })
+
+                if (!response.ok) {
+                    toast.error('Error al actualizar la cartelera')
+                    return
+                }
+
+                toast.success('¡Cartelera actualizada con éxito!')
+            } catch (error) {
+                console.log(error)
+            }
+
+
+        } else {
+            try {
+
+                const response = await fetch(`/api/${storeId}/billboards/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ label: data.label, imageUrl: data.imageUrl })
+                })
+
+                if (!response.ok) {
+                    toast.error('Error al crear la cartelera')
+                    return
+                }
+
+                toast.success('¡Cartelera creada con éxito!')
+
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    }
+
+    const onDelete = async () => {
+        try {
+
+            const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+
+            if (!response.ok) {
+                setOpen(false)
+                throw new Error('No se pudo eliminar')
+
+            }
+
+            toast.success('Cartelera eliminada')
+            setOpen(false)
+            return response
+
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return (
@@ -61,7 +133,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
             <AlertModal
                 isOpen={open}
                 onClose={() => { setOpen(false) }}
-                onConfirm={() => { }}
+                onConfirm={onDelete}
                 loading={loading}
             />
             <div className='flex items-center justify-between'>

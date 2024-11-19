@@ -14,7 +14,7 @@ const BillboardPage = async ({ params }: { params: { billboardId: string } }) =>
     const supabase = await supabaseClient(token)
 
     const { data, error } = await supabase
-        .from('billboard')
+        .from('billboards')
         .select()
         .eq('id', params.billboardId)
         .single()

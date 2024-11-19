@@ -13,6 +13,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange })
     const [selected, setSelected] = useState(value)
     const [images, setImages] = useState<string[]>([]);
     const [reloadImages, setReloadImages] = useState<boolean>(false);
+    const [loading, setLoading] = useState(false)
 
 
     useEffect(() => {
@@ -37,6 +38,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange })
     }, [selected])
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setLoading(true)
 
         const file = e.target.files?.[0]; // Asegúrate de que hay un archivo seleccionado
         if (!file) {
@@ -66,6 +68,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange })
             console.log(data); // Muestra la respuesta devuelta por la API
         } catch (error) {
             console.error('Error en la solicitud:', error);
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -86,6 +90,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange })
                     accept='image/PNG, image/JPEG, image/JPG'
                     onChange={(e) => handleFileChange(e)}
                     className='hidden'
+                    disabled={loading}
                 />
             </div>
         </div>
