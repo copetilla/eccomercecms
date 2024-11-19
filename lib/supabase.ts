@@ -7,7 +7,7 @@ if (!supabaseUrl || !supabaseKey) {
     throw new Error('Supabase URL and Key must be provided');
 }
 
-export const supabaseClient = async (supabaseToken: any) => {
+export const supabaseClient = async (supabaseToken?: any) => {
     const supabase = createClient(supabaseUrl, supabaseKey, {
         global: { headers: { Authorization: `Bearer ${supabaseToken}` } }
     });

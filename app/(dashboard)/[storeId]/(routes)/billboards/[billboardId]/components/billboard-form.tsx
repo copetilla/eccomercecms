@@ -17,6 +17,8 @@ import toast from 'react-hot-toast'
 import AlertModal from '@/components/modals/alert-modal'
 import ApiAlert from '@/components/ui/api-alert'
 import { useOrigin } from '@/hooks/use-origin'
+import { ImageUploader } from '@/components/upload_image'
+
 
 interface BillboardFormProps {
     billboard: Billboard | null
@@ -34,6 +36,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     const router = useRouter();
     const origin = useOrigin();
 
+    const [imageFile, setImageFile] = useState(null)
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
@@ -51,80 +54,49 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     });
 
     const onSubmit = async (data: BillboardFormValues) => {
+        const formData = new FormData();
 
-        try {
-            setLoading(true);
-
-            const response = await fetch(`/api/stores/${params.storeId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            });
-
-            if (!response.ok) {
-                throw new Error();
-            }
-
-            router.refresh()
-            toast.success("Tienda actualizada con éxito")
-
-        } catch (error) {
-            toast.error('Algo salió mal')
-        } finally {
-            setLoading(false)
+        if (imageFile) {
+            formData.append('file', imageFile); // Agregar el archivo al FormData
         }
+        formData.append('label', data.label); // Agregar el texto de la etiqueta
 
-    }
+        // Realizar la solicitud POST al backend
+        const response = await fetch('/api/stores/upload-image', {
+            method: 'POST',
+            body: formData,
+        });
 
-    const onDelete = async () => {
-        try {
-            setLoading(true)
-
-            const response = await fetch(`/api/stores/${params.storeId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error();
-            }
-
-            router.refresh()
-            router.push('/')
-            toast.success("Tienda eliminada")
-
-        } catch (error) {
-            toast.error("Asegurate que no tengas ninguna cateogira ni productos en la tienda")
-        } finally {
-            setLoading(false)
-            setOpen(false)
+        if (response.ok) {
+            const result = await response.json();
+            console.log('Imagen subida correctamente', result);
+            router.push('/path-to-somewhere'); // Redirigir después de la carga
+        } else {
+            console.error('Error al cargar la imagen');
         }
     }
+
     return (
         <>
             <AlertModal
                 isOpen={open}
                 onClose={() => { setOpen(false) }}
-                onConfirm={onDelete}
+                onConfirm={() => { }}
                 loading={loading}
             />
             <div className='flex items-center justify-between'>
                 <Heading
-                    title='Configuraciones'
-                    description='Administrar preferencias de la tienda'
+                    title={title}
+                    description={description}
                 />
-                <Button
+                {billboard && (<Button
                     disabled={loading}
                     variant={'destructive'}
                     size={'sm'}
                     onClick={() => { setOpen(true) }}
                 >
                     <Trash className='h-4 w-4' />
-                </Button>
+                </Button>)}
             </div>
 
             <Separator />
@@ -135,19 +107,45 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                     className=' space-y-8 w-full'
                 >
                     <div className='grid grid-cols-3 gap-8'>
+
+                        <FormField
+                            control={form.control}
+                            name='imageUrl'
+                            render={({ field }) => (
+                                <FormItem className=''>
+                                    <FormLabel>
+                                        Imagen
+                                    </FormLabel>
+                                    <FormControl className=''>
+                                        <ImageUploader
+                                            value={field.value}
+                                            onchange={(imageUrl) => field.onChange(imageUrl)}
+                                            setImageFile={setImageFile}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+
+                    </div>
+                    <div className='grid grid-cols-3 gap-8'>
+
                         <FormField
                             control={form.control}
                             name='label'
                             render={({ field }) => (
-                                <FormItem>
+                                <FormItem className=''>
                                     <FormLabel>
                                         Nombre
                                     </FormLabel>
-                                    <FormControl>
+                                    <FormControl className=''>
                                         <Input
                                             disabled={loading}
-                                            placeholder='Nombre de la tienda'
+                                            placeholder='Etiqueta de la cartelera'
                                             {...field}
+                                            className=''
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -158,14 +156,12 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
 
                     </div>
                     <Button disabled={loading} type='submit'>
-                        Guardar cambios
+                        {action}
                     </Button>
                 </form>
             </Form>
 
             <Separator />
-
-            <ApiAlert title='NEXT_PUBLIC_API_URL' description={`${origin}/api/${params.storeId}`} variant='public' />
 
         </>
     )

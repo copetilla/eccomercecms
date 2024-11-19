@@ -6,11 +6,10 @@ import BillboardForm from './components/billboard-form'
 
 const BillboardPage = async ({ params }: { params: { billboardId: string } }) => {
 
-    console.log('aqui llego?')
     const { getToken } = await auth()
-    // if (!getToken) {
-    //     redirect('/sign-in')
-    // }
+    if (!getToken) {
+        console.log('no token')
+    }
     const token = await getToken({ template: 'supabase' })
     const supabase = await supabaseClient(token)
 
@@ -20,13 +19,13 @@ const BillboardPage = async ({ params }: { params: { billboardId: string } }) =>
         .eq('id', params.billboardId)
         .single()
 
-    console.log("aqui", error)
+    console.log(error)
 
     return (
         <div className='flex-col'>
             <div className='flex-1 space-y-4 p-8 pt-6'>
-                {/* <BillboardForm billboard={data} /> */}
-                Aqui toy
+                <BillboardForm billboard={data} />
+
             </div>
         </div>
     )
