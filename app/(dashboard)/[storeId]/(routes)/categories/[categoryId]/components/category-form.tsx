@@ -51,25 +51,26 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category }) => {
 
     const onSubmit = async (data: CategoryFormValues) => {
         setLoading(true)
+        console.log(data)
         if (category) {
 
             try {
 
-                const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
+                const response = await fetch(`/api/${storeId}/categories/${categoryId}`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ label: data.label, imageUrl: data.imageUrl })
+                    body: JSON.stringify({ name: data.name, billboardId: data.billboardId })
                 })
 
                 if (!response.ok) {
-                    toast.error('Error al actualizar la cartelera')
+                    toast.error('Error al actualizar la categoria')
                     return
                 }
-                router.push(`/${storeId}/billboards`)
+                router.push(`/${storeId}/categories`)
                 router.refresh()
-                toast.success('¡Cartelera actualizada con éxito!')
+                toast.success('Categoria actualizada con éxito!')
             } catch (error) {
                 console.log(error)
             } finally {
@@ -80,21 +81,21 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category }) => {
         } else {
             try {
 
-                const response = await fetch(`/api/${storeId}/billboards/`, {
+                const response = await fetch(`/api/${storeId}/categories/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ label: data.label, imageUrl: data.imageUrl })
+                    body: JSON.stringify({ name: data.name, billboardId: data.billboardId })
                 })
 
                 if (!response.ok) {
-                    toast.error('Error al crear la cartelera')
+                    toast.error('Error al crear la categoria')
                     return
                 }
-                router.push(`/${storeId}/billboards`)
+                router.push(`/${storeId}/categories`)
                 router.refresh()
-                toast.success('¡Cartelera creada con éxito!')
+                toast.success('Categoria creada con éxito!')
             } catch (error) {
                 console.log(error)
             } finally {
@@ -104,9 +105,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category }) => {
     }
 
     const onDelete = async () => {
+        setLoading(true)
         try {
 
-            const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
+            const response = await fetch(`/api/${storeId}/categories/${categoryId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,14 +119,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category }) => {
                 throw new Error('No se pudo eliminar')
 
             }
-            router.push(`/${storeId}/billboards`)
+            router.push(`/${storeId}/categories`)
             router.refresh()
-            toast.success('¡Cartelera eliminada con éxito!')
+            toast.success('¡Categoria eliminada con éxito!')
 
             return response
 
         } catch (error) {
-            console.log(error)
+            toast.error('Error al elminar la categoria')
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -191,6 +195,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category }) => {
                                     </FormLabel>
                                     <FormControl className=''>
                                         <BillboardSelect
+                                            disabled={loading}
                                             value={field.value}
                                             onChange={(value) => {
                                                 console.log("Valor seleccionado:", value); // Imprime el valor

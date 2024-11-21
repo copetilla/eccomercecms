@@ -12,11 +12,12 @@ import { Billboard } from '@/types/page';
 import { useParams } from 'next/navigation';
 
 interface BillboardSelectProps {
+    disabled: boolean;
     value: string;
     onChange: (billboardId: string) => void
 }
 
-const BillboardSelect = ({ value, onChange }: BillboardSelectProps) => {
+const BillboardSelect = ({ disabled, value, onChange }: BillboardSelectProps) => {
     const params = useParams();
     const { storeId } = params;
 
@@ -62,6 +63,7 @@ const BillboardSelect = ({ value, onChange }: BillboardSelectProps) => {
         <Select
             value={value || undefined} // Usa el valor pasado por parámetro o undefined si es una cadena vacía
             onValueChange={(selectedValue) => onChange(selectedValue)} // Llama a onChange cuando se seleccione un valor
+            disabled={disabled}
         >
             <SelectTrigger>
                 <SelectValue placeholder={

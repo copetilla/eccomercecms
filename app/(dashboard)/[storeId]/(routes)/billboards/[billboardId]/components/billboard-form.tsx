@@ -105,6 +105,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     }
 
     const onDelete = async () => {
+        setLoading(true)
         try {
 
             const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
@@ -125,7 +126,9 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
             return response
 
         } catch (error) {
-            console.log(error)
+            toast.error('Cartelera eliminada sin éxito')
+        } finally {
+            setLoading(false)
         }
     }
 

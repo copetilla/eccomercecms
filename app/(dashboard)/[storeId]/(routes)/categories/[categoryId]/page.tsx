@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import React from 'react'
 import CategoryForm from './components/category-form'
 
-const CateogryPage = async ({ params }: { params: { billboardId: string } }) => {
+const CateogryPage = async ({ params }: { params: { categoryId: string } }) => {
 
     const { getToken } = await auth()
     if (!getToken) {
@@ -14,9 +14,9 @@ const CateogryPage = async ({ params }: { params: { billboardId: string } }) => 
     const supabase = await supabaseClient(token)
 
     const { data, error } = await supabase
-        .from('billboards')
+        .from('Category')
         .select()
-        .eq('id', params.billboardId)
+        .eq('id', params.categoryId)
         .single()
 
     console.log(error)
