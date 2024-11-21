@@ -6,23 +6,23 @@ import { Button } from '@/components/ui/button'
 import Heading from '@/components/ui/heading'
 import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'
-import { Billboard } from '@/types/page'
+import { Category } from '@/types/page'
 import { DataTable } from '@/components/ui/data-table'
 import { columns } from './columns'
 import ApiList from '@/components/ui/api-list'
 
 interface BillboardClientProps {
-    data: Billboard[]
+    data: Category[]
 }
 
-const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
+const CategoryClient: React.FC<BillboardClientProps> = ({ data }) => {
     const router = useRouter();
     const params = useParams();
     return (
         <>
             <div className='flex items-center justify-between'>
-                <Heading title={`Carteleras (${data.length})`} description='Administra la cartelera de tu tienda' />
-                <Button onClick={() => router.push(`/${params.storeId}/billboards/new`)}>
+                <Heading title={`Categorias (${data.length})`} description='Administra las categorias de tu tienda' />
+                <Button onClick={() => router.push(`/${params.storeId}/categories/new`)}>
                     <Plus className='mr-2 h-4 w-4' />
                     Añadir nueva
                 </Button>
@@ -36,4 +36,4 @@ const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
     )
 }
 
-export default BillboardClient
+export default CategoryClient

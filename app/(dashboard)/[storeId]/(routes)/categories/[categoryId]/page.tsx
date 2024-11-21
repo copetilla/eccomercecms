@@ -2,9 +2,9 @@ import { supabaseClient } from '@/lib/supabase'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import React from 'react'
-import BillboardForm from './components/billboard-form'
+import CategoryForm from './components/category-form'
 
-const BillboardPage = async ({ params }: { params: { billboardId: string } }) => {
+const CateogryPage = async ({ params }: { params: { billboardId: string } }) => {
 
     const { getToken } = await auth()
     if (!getToken) {
@@ -24,11 +24,11 @@ const BillboardPage = async ({ params }: { params: { billboardId: string } }) =>
     return (
         <div className='flex-col'>
             <div className='flex-1 space-y-4 p-8 pt-6'>
-                <BillboardForm billboard={data} />
+                <CategoryForm category={data} />
 
             </div>
         </div>
     )
 }
 
-export default BillboardPage
+export default CateogryPage

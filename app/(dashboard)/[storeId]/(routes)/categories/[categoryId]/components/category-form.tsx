@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import * as z from 'zod'
-import { Billboard } from '@/types/page'
+import { Category } from '@/types/page'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Trash } from 'lucide-react'
@@ -15,44 +15,43 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import toast from 'react-hot-toast'
 import AlertModal from '@/components/modals/alert-modal'
-import { ImageUploader } from '@/components/upload_image'
+import BillboardSelect from './billboardSelect'
 
-
-interface BillboardFormProps {
-    billboard: Billboard | null
+interface CategoryFormProps {
+    category: Category | null
 }
 
 const formSchema = z.object({
-    label: z.string().min(1),
-    imageUrl: z.string().min(1)
+    name: z.string().min(1),
+    billboardId: z.string().min(1)
 });
 
-type BillboardFormValues = z.infer<typeof formSchema>;
+type CategoryFormValues = z.infer<typeof formSchema>;
 
-const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
+const CategoryForm: React.FC<CategoryFormProps> = ({ category }) => {
     const params = useParams();
     const router = useRouter();
 
-    const { storeId, billboardId } = params
+    const { storeId, categoryId } = params
 
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
 
-    const title = billboard ? "Editar cartelera" : "Crear cartelera";
-    const description = billboard ? "Editar una cartelera" : "Añadira una nueva cartelera";
-    const action = billboard ? "Guardar cambios" : "Crear";
+    const title = category ? "Editar categoria" : "Crear categoria";
+    const description = category ? "Editar una categoria" : "Añadira una nueva categoria";
+    const action = category ? "Guardar cambios" : "Crear";
 
-    const form = useForm<BillboardFormValues>({
+    const form = useForm<CategoryFormValues>({
         resolver: zodResolver(formSchema),
-        defaultValues: billboard || {
-            label: '',
-            imageUrl: ''
+        defaultValues: category || {
+            name: '',
+            billboardId: ''
         }
     });
 
-    const onSubmit = async (data: BillboardFormValues) => {
+    const onSubmit = async (data: CategoryFormValues) => {
         setLoading(true)
-        if (billboard) {
+        if (category) {
 
             try {
 
@@ -142,7 +141,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                     title={title}
                     description={description}
                 />
-                {billboard && (<Button
+                {category && (<Button
                     disabled={loading}
                     variant={'destructive'}
                     size={'sm'}
@@ -159,34 +158,11 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className=' space-y-8 w-full'
                 >
-                    <div className='grid grid-cols-3 gap-8'>
 
+                    <div className='grid md:grid-cols-2 gap-8'>
                         <FormField
                             control={form.control}
-                            name='imageUrl'
-                            render={({ field }) => (
-                                <FormItem className=''>
-                                    <FormLabel>
-                                        Imagen
-                                    </FormLabel>
-                                    <FormControl className=''>
-                                        <ImageUploader
-                                            value={field.value}
-                                            onchange={(imageUrl) => field.onChange(imageUrl)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-
-                    </div>
-                    <div className='grid grid-cols-3 gap-8'>
-
-                        <FormField
-                            control={form.control}
-                            name='label'
+                            name='name'
                             render={({ field }) => (
                                 <FormItem className=''>
                                     <FormLabel>
@@ -195,7 +171,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                                     <FormControl className=''>
                                         <Input
                                             disabled={loading}
-                                            placeholder='Etiqueta de la cartelera'
+                                            placeholder='Nombre de la categoria'
                                             {...field}
                                             className=''
                                         />
@@ -205,6 +181,26 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                             )}
                         />
 
+                        <FormField
+                            control={form.control}
+                            name='billboardId'
+                            render={({ field }) => (
+                                <FormItem className=''>
+                                    <FormLabel>
+                                        Cartelera
+                                    </FormLabel>
+                                    <FormControl className=''>
+                                        <BillboardSelect
+                                            value={field.value}
+                                            onChange={(value) => {
+                                                console.log("Valor seleccionado:", value); // Imprime el valor
+                                                field.onChange(value); // Llama a la función original
+                                            }} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
 
                     </div>
                     <Button disabled={loading} type='submit'>
@@ -217,4 +213,4 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     )
 }
 
-export default BillboardForm
+export default CategoryForm
