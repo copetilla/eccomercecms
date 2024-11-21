@@ -18,6 +18,7 @@ export interface Category {
     id: string;
     storeId: string;
     billboardId: string;
+    name: string;
     label: string;
     created_at: string;
     updated_at: string;

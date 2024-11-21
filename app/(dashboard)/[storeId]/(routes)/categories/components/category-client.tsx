@@ -18,6 +18,7 @@ interface BillboardClientProps {
 const CategoryClient: React.FC<BillboardClientProps> = ({ data }) => {
     const router = useRouter();
     const params = useParams();
+
     return (
         <>
             <div className='flex items-center justify-between'>
@@ -29,7 +30,7 @@ const CategoryClient: React.FC<BillboardClientProps> = ({ data }) => {
             </div>
 
             <Separator />
-            <DataTable columns={columns} data={data} searchKey='label' />
+            <DataTable columns={columns} data={data} searchKey='name' />
             <Heading title='API' description='Llamadas API para carteleras' />
             <ApiList entityName='billboards' entityIdName='billboardId' />
         </>
