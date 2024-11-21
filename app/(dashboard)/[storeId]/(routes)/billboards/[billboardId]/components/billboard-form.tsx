@@ -15,8 +15,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import toast from 'react-hot-toast'
 import AlertModal from '@/components/modals/alert-modal'
-import ApiAlert from '@/components/ui/api-alert'
-import { useOrigin } from '@/hooks/use-origin'
 import { ImageUploader } from '@/components/upload_image'
 
 
@@ -34,7 +32,6 @@ type BillboardFormValues = z.infer<typeof formSchema>;
 const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     const params = useParams();
     const router = useRouter();
-    const origin = useOrigin();
 
     const { storeId, billboardId } = params
 
@@ -43,7 +40,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
 
     const title = billboard ? "Editar cartelera" : "Crear cartelera";
     const description = billboard ? "Editar una cartelera" : "Añadira una nueva cartelera";
-    const toastMessage = billboard ? "Cartelera actualizada" : "Cartelera creada";
     const action = billboard ? "Guardar cambios" : "Crear";
 
     const form = useForm<BillboardFormValues>({
@@ -55,6 +51,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     });
 
     const onSubmit = async (data: BillboardFormValues) => {
+        setLoading(true)
         if (billboard) {
 
             try {
@@ -71,10 +68,13 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                     toast.error('Error al actualizar la cartelera')
                     return
                 }
-
+                router.push(`/${storeId}/billboards`)
+                router.refresh()
                 toast.success('¡Cartelera actualizada con éxito!')
             } catch (error) {
                 console.log(error)
+            } finally {
+                setLoading(false)
             }
 
 
@@ -93,12 +93,13 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                     toast.error('Error al crear la cartelera')
                     return
                 }
-
+                router.push(`/${storeId}/billboards`)
+                router.refresh()
                 toast.success('¡Cartelera creada con éxito!')
-
-
             } catch (error) {
                 console.log(error)
+            } finally {
+                setLoading(false)
             }
         }
     }
@@ -114,13 +115,13 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
             })
 
             if (!response.ok) {
-                setOpen(false)
                 throw new Error('No se pudo eliminar')
 
             }
+            router.push(`/${storeId}/billboards`)
+            router.refresh()
+            toast.success('¡Cartelera eliminada con éxito!')
 
-            toast.success('Cartelera eliminada')
-            setOpen(false)
             return response
 
         } catch (error) {
@@ -211,8 +212,6 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                     </Button>
                 </form>
             </Form>
-
-            <Separator />
 
         </>
     )

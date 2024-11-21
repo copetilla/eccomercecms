@@ -19,7 +19,7 @@ const ImageCard = ({ images, reloadImages, selected, setSelected }: ImageCardPro
         const fileName = src.split('/storage/v1/object/public/billboards_background/')[1];
         console.log(fileName)
         try {
-            const response = await fetch('/api/billboard', {
+            const response = await fetch('/api/billboard_background', {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -37,6 +37,8 @@ const ImageCard = ({ images, reloadImages, selected, setSelected }: ImageCardPro
             console.log(data);
 
         } catch (error) {
+            console.log(error)
+        } finally {
 
         }
     }
@@ -47,7 +49,7 @@ const ImageCard = ({ images, reloadImages, selected, setSelected }: ImageCardPro
     return (
         <>
             {images.map((src) => (
-                <div className={cn(' relative w-[200px] h-[200px] rounded-md overflow-hidden', {
+                <div key={src} className={cn(' relative w-[200px] h-[200px] rounded-md overflow-hidden', {
                     'border-4 border-violet-500': selected === src,
                 })}>
                     <div className="z-10 absolute top-2 right-2">
@@ -61,6 +63,7 @@ const ImageCard = ({ images, reloadImages, selected, setSelected }: ImageCardPro
                     </div>
                     <Image
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover cursor-pointer"
                         alt="Image"
                         src={src}

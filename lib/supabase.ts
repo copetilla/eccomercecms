@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabaseClient = async (supabaseToken?: any) => {
     const supabase = createClient(supabaseUrl, supabaseKey, {
-        global: { headers: { Authorization: `Bearer ${supabaseToken}` } }
+        global: { headers: { Authorization: `Bearer ${supabaseToken ? supabaseToken : supabaseKey}` } }
     });
 
     return supabase

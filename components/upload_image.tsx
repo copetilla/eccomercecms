@@ -20,7 +20,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange })
 
         const loadImages = async () => {
             try {
-                const response = await fetch('/api/billboard')
+                const response = await fetch('/api/billboard_background')
                 const data = await response.json();
                 setImages(data)
 
@@ -51,7 +51,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange })
             const formData = new FormData();
             formData.append('file', file); // Agregar el archivo al FormData
 
-            const response = await fetch('/api/billboard', {
+            const response = await fetch('/api/billboard_background', {
                 method: 'POST',
                 body: formData, // Pasar el FormData como cuerpo
             });
