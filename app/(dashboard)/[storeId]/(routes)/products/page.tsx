@@ -19,12 +19,12 @@ const BillboardsPage = async ({ params }: { params: { storeId: string } }) => {
     const supabase = await supabaseClient(token);
 
     const { data, error } = await supabase
-        .from('billboards')
+        .from('Product')
         .select('*')
         .eq('storeId', params.storeId)
 
     if (error) {
-        console.log('ERROR LOADING BILLBOARDS', error)
+        console.log('ERROR LOADING PRODUCTS', error)
     }
 
     const safeData: Billboard[] = formatBillboardsData(data || []);
