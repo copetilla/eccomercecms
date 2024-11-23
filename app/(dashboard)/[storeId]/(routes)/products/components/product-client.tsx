@@ -11,20 +11,20 @@ import { DataTable } from '@/components/ui/data-table'
 import { columns } from './columns'
 import ApiList from '@/components/ui/api-list'
 
-interface BillboardClientProps {
+interface ProductClientProps {
     data: Billboard[]
 }
 
-const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
+const ProductClient: React.FC<ProductClientProps> = ({ data }) => {
     const router = useRouter();
     const params = useParams();
     return (
         <>
             <div className='flex items-center justify-between'>
-                <Heading title={`Carteleras (${data.length})`} description='Administra la cartelera de tu tienda' />
-                <Button onClick={() => router.push(`/${params.storeId}/billboards/new`)}>
+                <Heading title={`Productos (${data.length})`} description='Administra los productos de tu tienda' />
+                <Button onClick={() => router.push(`/${params.storeId}/products/new`)}>
                     <Plus className='mr-2 h-4 w-4' />
-                    Añadir nueva
+                    Añadir nuevo
                 </Button>
             </div>
 
@@ -36,4 +36,4 @@ const BillboardClient: React.FC<BillboardClientProps> = ({ data }) => {
     )
 }
 
-export default BillboardClient
+export default ProductClient

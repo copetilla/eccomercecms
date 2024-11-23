@@ -7,51 +7,15 @@ import { cn } from '@/lib/utils'
 
 interface ImageCardProps {
     images: string[]
-    reloadImages: (value: boolean) => void
-    selected: string
-    setSelected: React.Dispatch<SetStateAction<string>>
+    DeleteImage: (src: string) => void
 }
 
-const ImageCard = ({ images, reloadImages, selected, setSelected }: ImageCardProps) => {
+const ImageCard = ({ images, DeleteImage }: ImageCardProps) => {
 
-    const DeleteImage = async (src: string) => {
-
-        const fileName = src.split('/storage/v1/object/public/billboards_background/')[1];
-        console.log(fileName)
-        try {
-            const response = await fetch('/api/billboard_background', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ fileName })
-            })
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            reloadImages(!reloadImages)
-
-            console.log(data);
-
-        } catch (error) {
-            console.log(error)
-        } finally {
-
-        }
-    }
-
-    const onClickImage = (src: string) => {
-        setSelected(src)
-    }
     return (
         <>
             {images.map((src) => (
-                <div key={src} className={cn(' relative w-[200px] h-[200px] rounded-md overflow-hidden', {
-                    'border-4 border-violet-500': selected === src,
-                })}>
+                <div key={src} className={cn(' relative w-[200px] h-[200px] rounded-md overflow-hidden')}>
                     <div className="z-10 absolute top-2 right-2">
                         <Button
                             type="button"
@@ -67,7 +31,6 @@ const ImageCard = ({ images, reloadImages, selected, setSelected }: ImageCardPro
                         className="object-cover cursor-pointer"
                         alt="Image"
                         src={src}
-                        onClick={() => onClickImage(src)}
                     />
                 </div>
             ))}

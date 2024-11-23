@@ -1,6 +1,6 @@
 import React from 'react'
 import { format } from 'date-fns';
-import BillboardClient from './components/billboard-client'
+import ProductClient from './components/product-client'
 import { auth } from '@clerk/nextjs/server';
 import { supabaseClient } from '@/lib/supabase';
 import { Billboard } from '@/types/page';
@@ -32,7 +32,7 @@ const BillboardsPage = async ({ params }: { params: { storeId: string } }) => {
     return (
         <div className=' flex-col'>
             <div className='flex-1 space-y-4 p-8 pt-6'>
-                <BillboardClient data={safeData} />
+                <ProductClient data={safeData} />
             </div>
         </div>
     )

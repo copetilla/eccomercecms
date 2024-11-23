@@ -29,7 +29,7 @@ const formSchema = z.object({
 
 type BillboardFormValues = z.infer<typeof formSchema>;
 
-const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
+const ProductForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     const params = useParams();
     const router = useRouter();
 
@@ -157,12 +157,14 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
 
             <Separator />
 
+            <ImageUploader />
+
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
                     className=' space-y-8 w-full'
                 >
-                    <div className='grid grid-cols-3 gap-8'>
+                    {/* <div className='grid grid-cols-3 gap-8'>
 
                         <FormField
                             control={form.control}
@@ -184,7 +186,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                         />
 
 
-                    </div>
+                    </div> */}
                     <div className='grid grid-cols-3 gap-8'>
 
                         <FormField
@@ -220,4 +222,4 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     )
 }
 
-export default BillboardForm
+export default ProductForm

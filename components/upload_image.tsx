@@ -4,79 +4,46 @@ import { Input } from '@/components/ui/input';
 import ImageCard from '@/components/image-card';
 
 interface ImageUploaderProps {
-    value: string;
-    onchange: (value: string) => void
+
 }
 
-export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange }) => {
+export const ImageUploader: React.FC<ImageUploaderProps> = () => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [selected, setSelected] = useState(value)
-    const [images, setImages] = useState<string[]>([]);
-    const [reloadImages, setReloadImages] = useState<boolean>(false);
+    const [images, setImages] = useState<File[]>([]);
+    const [imagesUrl, setImagesUrl] = useState<string[]>([]);
     const [loading, setLoading] = useState(false)
 
 
-    useEffect(() => {
-
-        const loadImages = async () => {
-            try {
-                const response = await fetch('/api/billboard_background')
-                const data = await response.json();
-                setImages(data)
-
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        loadImages()
-
-    }, [reloadImages])
-
-    useEffect(() => {
-        onchange(selected)
-    }, [selected])
-
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setLoading(true)
+        if (e.target.files) {
+            const selectedFiles = Array.from(e.target.files);
 
-        const file = e.target.files?.[0]; // Asegúrate de que hay un archivo seleccionado
-        if (!file) {
-            console.error("No file selected");
-            return;
-        }
+            // Actualiza el estado de imágenes originales
+            setImages((prev) => [...prev, ...selectedFiles]);
 
-        try {
-            // Crear un objeto FormData
-            const formData = new FormData();
-            formData.append('file', file); // Agregar el archivo al FormData
+            // Genera URLs temporales para las imágenes seleccionadas
+            const selectedImagesWithUrls = selectedFiles.map((file) => URL.createObjectURL(file));
 
-            const response = await fetch('/api/billboard_background', {
-                method: 'POST',
-                body: formData, // Pasar el FormData como cuerpo
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            setImages((prevImages) => [...prevImages, data.publicUrl])
-
-            setReloadImages(!reloadImages)
-
-            console.log(data); // Muestra la respuesta devuelta por la API
-        } catch (error) {
-            console.error('Error en la solicitud:', error);
-        } finally {
-            setLoading(false)
+            // Actualiza el estado de las URLs
+            setImagesUrl((prev) => [...prev, ...selectedImagesWithUrls]);
         }
     }
+
+    const DeleteImage = (url: string) => {
+        // Encuentra el índice de la URL a eliminar
+        const indexToRemove = imagesUrl.indexOf(url);
+
+        if (indexToRemove !== -1) {
+            // Actualiza el estado eliminando el elemento en el índice encontrado
+            setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+            setImagesUrl((prev) => prev.filter((_, index) => index !== indexToRemove));
+        }
+    };
 
     return (
         <div>
             <div className="mb-4 flex items-center gap-4">
-                <ImageCard images={images} reloadImages={setReloadImages} selected={selected} setSelected={setSelected} />
+                <ImageCard images={imagesUrl} DeleteImage={DeleteImage} />
             </div>
             <div>
                 <label htmlFor='file-input' className="cursor-pointer flex space-x-2 items-center justify-center w-full h-10 rounded-md bg-gray-200 hover:bg-gray-300">
@@ -91,6 +58,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onchange })
                     onChange={(e) => handleFileChange(e)}
                     className='hidden'
                     disabled={loading}
+                    multiple={true}
                 />
             </div>
         </div>
