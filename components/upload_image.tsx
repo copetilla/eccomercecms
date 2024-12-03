@@ -1,64 +1,103 @@
-import { useEffect, useRef, useState } from 'react';
+import { SetStateAction, useEffect, useRef, useState } from 'react';
 import { ImagePlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import ImageCard from '@/components/image-card';
+import { useParams } from 'next/navigation';
 
 interface ImageUploaderProps {
-
+    setImagesUpload: (value: SetStateAction<File[]>) => void;
+    productId?: string;
+    urlsDelete?: () => void
+    newImages?: () => void
 }
 
-export const ImageUploader: React.FC<ImageUploaderProps> = () => {
+export const ImageUploader: React.FC<ImageUploaderProps> = ({ setImagesUpload, productId, urlsDelete, newImages }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [images, setImages] = useState<File[]>([]);
-    const [imagesUrl, setImagesUrl] = useState<string[]>([]);
-    const [loading, setLoading] = useState(false)
+    const [imagesUrl, setImagesUrl] = useState<any>([]);
+    const [loading, setLoading] = useState(false);
+    const params = useParams();
 
+    useEffect(() => {
+        const getImages = async () => {
+            try {
+                const response = await fetch(`/api/${params.storeId}/products/${productId}/images`);
+                if (!response.ok) {
+                    console.error('Error loading images');
+                    return;
+                }
+                const data = await response.json();
+
+                if (Array.isArray(data.data)) {
+                    const newUrls = new Set(imagesUrl);
+                    data.data.forEach((d: any) => {
+                        if (d.url) {
+                            newUrls.add({
+                                url: d.url,
+                                name: d.url // Usamos el mismo URL como nombre
+                            });
+                        }
+                    });
+                    setImagesUrl(newUrls);
+                } else {
+                    console.error("data.data no es un array:", data.data);
+                }
+            } catch (error) {
+                console.error("Error fetching images:", error);
+            }
+        };
+
+        if (productId) {
+            getImages();
+        }
+    }, [productId, params.storeId]);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const selectedFiles = Array.from(e.target.files);
+            setImagesUpload(prev => [...prev, ...selectedFiles]);
 
-            // Actualiza el estado de imágenes originales
-            setImages((prev) => [...prev, ...selectedFiles]);
+            const selectedImagesWithUrls = selectedFiles.map(file => ({
+                url: URL.createObjectURL(file),
+                name: file.name
+            }));
 
-            // Genera URLs temporales para las imágenes seleccionadas
-            const selectedImagesWithUrls = selectedFiles.map((file) => URL.createObjectURL(file));
-
-            // Actualiza el estado de las URLs
-            setImagesUrl((prev) => [...prev, ...selectedImagesWithUrls]);
+            setImagesUrl(prev => {
+                const updatedUrls = new Set([...prev]);
+                selectedImagesWithUrls.forEach(image => updatedUrls.add(image));
+                return updatedUrls;
+            });
         }
-    }
+    };
 
-    const DeleteImage = (url: string) => {
-        // Encuentra el índice de la URL a eliminar
-        const indexToRemove = imagesUrl.indexOf(url);
+    const DeleteImage = (file: { name: string, url: string }) => {
+        setImagesUpload(prev => prev.filter(image => image.name !== file.name));
 
-        if (indexToRemove !== -1) {
-            // Actualiza el estado eliminando el elemento en el índice encontrado
-            setImages((prev) => prev.filter((_, index) => index !== indexToRemove));
-            setImagesUrl((prev) => prev.filter((_, index) => index !== indexToRemove));
-        }
+        setImagesUrl(prev => {
+            const updatedUrls = new Set([...prev].filter(image => image.url !== file.url));
+            return updatedUrls;
+        });
     };
 
     return (
         <div>
-            <div className="mb-4 flex items-center gap-4">
-                <ImageCard images={imagesUrl} DeleteImage={DeleteImage} />
+            <div className="mb-4 grid 2xl:grid-cols-8 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-2 grid-cols-1 items-center gap-4">
+                <ImageCard images={Array.from(imagesUrl)} DeleteImage={DeleteImage} />
             </div>
             <div>
-                <label htmlFor='file-input' className="cursor-pointer flex space-x-2 items-center justify-center w-full h-10 rounded-md bg-gray-200 hover:bg-gray-300">
+                <label htmlFor="file-input" className="cursor-pointer flex space-x-2 items-center justify-center w-full h-10 rounded-md bg-gray-200 hover:bg-gray-300">
                     <ImagePlus className="w-4 h-4 text-gray-600" />
                     <p>Subir una imagen</p>
                 </label>
                 <Input
-                    id='file-input'
-                    ref={fileInputRef} // Asigna la referencia al input de archivo
+                    id="file-input"
+                    ref={fileInputRef}
                     type="file"
-                    accept='image/PNG, image/JPEG, image/JPG'
-                    onChange={(e) => handleFileChange(e)}
-                    className='hidden'
+                    accept="image/PNG, image/JPEG, image/JPG"
+                    onChange={handleFileChange}
+                    className="hidden"
                     disabled={loading}
-                    multiple={true}
+                    multiple
                 />
             </div>
         </div>

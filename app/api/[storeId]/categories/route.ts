@@ -30,3 +30,24 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
         return new NextResponse("[ERROR_CATEGORY]", { status: 500 });
     }
 }
+
+export async function GET(req: Request, { params }: { params: { storeId: string } }) {
+    try {
+
+        const supabase = await supabaseClient();
+
+        const { data, error } = await supabase
+            .from('Category')
+            .select('*')
+            .eq('storeId', params.storeId)
+
+        if (error) {
+            return new NextResponse("Error getting category", { status: 500 });
+        }
+
+        return NextResponse.json({ data })
+
+    } catch (error) {
+        return new NextResponse("[ERROR_CATEGORY]", { status: 500 });
+    }
+}

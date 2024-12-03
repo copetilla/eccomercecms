@@ -3,16 +3,16 @@ import { format } from 'date-fns';
 import ProductClient from './components/product-client'
 import { auth } from '@clerk/nextjs/server';
 import { supabaseClient } from '@/lib/supabase';
-import { Billboard } from '@/types/page';
+import { Product } from '@/types/page';
 
-const formatBillboardsData = (billboards: Billboard[]): Billboard[] =>
-    billboards.map((billboard) => ({
-        ...billboard,
-        created_at: format(new Date(billboard.created_at), 'MMMM do, yyyy HH:mm'),
-        updated_at: format(new Date(billboard.updated_at), 'MMMM do, yyyy HH:mm'),
+const formatProductsData = (Products: Product[]): Product[] =>
+    Products.map((Product) => ({
+        ...Product,
+        created_at: format(new Date(Product.created_at), 'MMMM do, yyyy HH:mm'),
+        updated_at: format(new Date(Product.updated_at), 'MMMM do, yyyy HH:mm'),
     }));
 
-const BillboardsPage = async ({ params }: { params: { storeId: string } }) => {
+const ProductsPage = async ({ params }: { params: { storeId: string } }) => {
 
     const { getToken } = await auth();
     const token = await getToken({ template: 'supabase' })
@@ -27,7 +27,7 @@ const BillboardsPage = async ({ params }: { params: { storeId: string } }) => {
         console.log('ERROR LOADING PRODUCTS', error)
     }
 
-    const safeData: Billboard[] = formatBillboardsData(data || []);
+    const safeData: Product[] = formatProductsData(data || []);
 
     return (
         <div className=' flex-col'>
@@ -38,4 +38,4 @@ const BillboardsPage = async ({ params }: { params: { storeId: string } }) => {
     )
 }
 
-export default BillboardsPage
+export default ProductsPage

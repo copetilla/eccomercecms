@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import React from 'react'
 import ProductForm from './components/product-form'
 
-const ProductPage = async ({ params }: { params: { billboardId: string } }) => {
+const ProductPage = async ({ params }: { params: { productId: string } }) => {
 
     const { getToken } = await auth()
     if (!getToken) {
@@ -14,9 +14,9 @@ const ProductPage = async ({ params }: { params: { billboardId: string } }) => {
     const supabase = await supabaseClient(token)
 
     const { data, error } = await supabase
-        .from('billboards')
+        .from('Product')
         .select()
-        .eq('id', params.billboardId)
+        .eq('id', params.productId)
         .single()
 
     console.log(error)
@@ -24,7 +24,7 @@ const ProductPage = async ({ params }: { params: { billboardId: string } }) => {
     return (
         <div className='flex-col'>
             <div className='flex-1 space-y-4 p-8 pt-6'>
-                <ProductForm billboard={data} />
+                <ProductForm product={data} />
 
             </div>
         </div>

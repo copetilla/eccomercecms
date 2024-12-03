@@ -24,4 +24,14 @@ export interface Category {
     updated_at: string;
 }
 
-
+export interface Product {
+    id: string;
+    storeId: string;
+    categoryId: string;
+    name: string;
+    price: number;
+    isFeatured: boolean;
+    isArchived: boolean;
+    created_at: string;
+    updated_at: string;
+}

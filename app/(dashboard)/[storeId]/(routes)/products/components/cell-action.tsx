@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { BillboardColumn } from './columns'
+import { ProductColumn } from './columns'
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
@@ -11,7 +11,7 @@ import { useParams, useRouter } from 'next/navigation'
 import AlertModal from '@/components/modals/alert-modal'
 
 interface CellActionProps {
-    data: BillboardColumn
+    data: ProductColumn
 }
 
 const CellAction: React.FC<CellActionProps> = ({ data }) => {
@@ -31,7 +31,7 @@ const CellAction: React.FC<CellActionProps> = ({ data }) => {
         setLoading(true)
         try {
 
-            const response = await fetch(`/api/${params.storeId}/billboards/${data.id}`, {
+            const response = await fetch(`/api/${params.storeId}/products/${data.id}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const CellAction: React.FC<CellActionProps> = ({ data }) => {
                     <DropdownMenuItem
                         className=' cursor-pointer'
                         onClick={() => {
-                            router.push(`/${params.storeId}/billboards/${data.id}`)
+                            router.push(`/${params.storeId}/products/${data.id}`)
                         }}
 
                     >

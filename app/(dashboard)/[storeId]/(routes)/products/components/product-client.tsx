@@ -6,13 +6,13 @@ import { Button } from '@/components/ui/button'
 import Heading from '@/components/ui/heading'
 import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'
-import { Billboard } from '@/types/page'
+import { Product } from '@/types/page'
 import { DataTable } from '@/components/ui/data-table'
 import { columns } from './columns'
 import ApiList from '@/components/ui/api-list'
 
 interface ProductClientProps {
-    data: Billboard[]
+    data: Product[]
 }
 
 const ProductClient: React.FC<ProductClientProps> = ({ data }) => {
@@ -31,7 +31,7 @@ const ProductClient: React.FC<ProductClientProps> = ({ data }) => {
             <Separator />
             <DataTable columns={columns} data={data} searchKey='label' />
             <Heading title='API' description='Llamadas API para carteleras' />
-            <ApiList entityName='billboards' entityIdName='billboardId' />
+            <ApiList entityName='products' entityIdName='productId' />
         </>
     )
 }
