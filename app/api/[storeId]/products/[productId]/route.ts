@@ -90,7 +90,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { productId:
 
         // Obtener datos del body
         const body = await req.json();
-        const { name, price, isFeatured, isArchived, categoryId } = body;
+        const { name, price, isFeatured, isArchived, categoryId, description } = body;
 
         // Validaciones opcionales
         if (!name && !price && !price) {
@@ -104,6 +104,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { productId:
         updateFields.isFeatured = isFeatured;
         updateFields.isArchived = isArchived;
         updateFields.categoryId = categoryId;
+        updateFields.description = description;
 
         const { data, error } = await supabase
             .from('Product')

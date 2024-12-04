@@ -10,7 +10,7 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
         const supabase = await supabaseClient(token)
 
         const body = await req.json()
-        const { name, price, categoryId, isFeatured, isArchived } = body
+        const { name, price, categoryId, isFeatured, isArchived, description } = body
 
         const { data, error } = await supabase
             .from('Product')
@@ -20,7 +20,8 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
                 name: name,
                 price: price,
                 isFeatured: isFeatured,
-                isArchived: isArchived
+                isArchived: isArchived,
+                description: description
             }])
             .select()
 

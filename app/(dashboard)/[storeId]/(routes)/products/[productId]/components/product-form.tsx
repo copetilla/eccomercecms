@@ -19,6 +19,7 @@ import { ImageUploader } from '@/components/upload_image'
 import { Checkbox } from '@/components/ui/checkbox'
 import SelectCategory from './selectCategory'
 import { v4 as uuidv4 } from 'uuid';
+import { Textarea } from '@/components/ui/textarea'
 
 interface BillboardFormProps {
     product: Product | null
@@ -30,6 +31,7 @@ const formSchema = z.object({
     price: z.number().min(1),
     isFeatured: z.boolean().default(false),
     isArchived: z.boolean().default(false),
+    description: z.string().min(10),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -56,12 +58,13 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
             categoryId: '',
             price: 0,
             isFeatured: false,
-            isArchived: false
+            isArchived: false,
+            description: '',
         }
     });
 
     const onSubmit = async (data: ProductFormValues) => {
-        console.log(data)
+
         setLoading(true)
         if (product) {
 
@@ -70,7 +73,6 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
                 //UPLOAD IMAGES
 
                 if (images && images.length > 0) {
-                    console.log('ENTRO INSERTAR')
 
                     const formData = new FormData();
                     images.forEach((file) => {
@@ -95,8 +97,6 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
                 //DELETE IMAGES
 
                 if (urlsDelete.length > 0) {
-                    console.log('ENTRO ELIMINAR')
-                    console.log(urlsDelete)
                     const response = await fetch(`/api/${storeId}/products/${productId}/images`, {
                         method: "DELETE",
                         body: JSON.stringify({
@@ -122,6 +122,7 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
                         categoryId: data.categoryId,
                         isFeatured: data.isFeatured,
                         isArchived: data.isArchived,
+                        description: data.description,
                         urlsDelete: urlsDelete,
 
                     })
@@ -156,7 +157,8 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
                         name: data.name,
                         price: data.price,
                         isFeatured: data.isFeatured,
-                        isArchived: data.isArchived
+                        isArchived: data.isArchived,
+                        description: data.description
                     })
                 })
 
@@ -170,22 +172,26 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
 
                 //UPLOAD IMAGES
 
-                const formData = new FormData();
-                images.forEach((file) => {
-                    formData.append("files", file);
-                });
+                if (images && images.length > 0) {
 
-                const responseImage = await fetch(`/api/${storeId}/products/${productId}/images`, {
-                    method: "POST",
-                    body: formData,
-                });
+                    const formData = new FormData();
+                    images.forEach((file) => {
+                        formData.append("files", file);
+                    });
 
-                if (!responseImage.ok) {
-                    const errorData = await responseImage.json();
-                    console.error("Error uploading files:", errorData.error);
-                    toast.error("Error al subir las imágenes.");
-                    return;
+                    const responseImage = await fetch(`/api/${storeId}/products/${productId}/images`, {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (!responseImage.ok) {
+                        const errorData = await responseImage.json();
+                        console.error("Error uploading files:", errorData.error);
+                        toast.error("Error al subir las imágenes.");
+                        return;
+                    }
                 }
+
 
                 router.push(`/${storeId}/products`)
                 router.refresh()
@@ -377,14 +383,28 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
 
 
                     </div>
+                    <div className='grid grid-cols-1 '>
+                        <FormField
+                            control={form.control}
+                            name='description'
+                            render={({ field }) => (
+                                <FormItem className=''>
+                                    <FormLabel>
+                                        Descripcion
+                                    </FormLabel>
+                                    <FormControl className=''>
+                                        <Textarea
+                                            className="resize-none"
+                                            {...field}
+                                            placeholder='Escribe tu descripcion aqui' />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                     <Button disabled={loading} type='submit'>
                         {action}
-                    </Button>
-                    <Button disabled={loading} onClick={() => console.log(urlsDelete)}>
-                        ver imagenes elimnar
-                    </Button>
-                    <Button disabled={loading} onClick={() => console.log(images)}>
-                        ver imagenes poner
                     </Button>
                 </form>
             </Form>

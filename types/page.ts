@@ -34,4 +34,5 @@ export interface Product {
     isArchived: boolean;
     created_at: string;
     updated_at: string;
+    description: string;
 }
