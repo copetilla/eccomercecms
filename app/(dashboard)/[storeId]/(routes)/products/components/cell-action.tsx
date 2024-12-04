@@ -39,13 +39,13 @@ const CellAction: React.FC<CellActionProps> = ({ data }) => {
             })
 
             if (!response.ok) {
-                toast.error('Error al eliminar la cartelera')
+                toast.error('Error al eliminar el producto')
                 setOpen(false)
                 throw new Error('No se pudo eliminar')
 
             }
             router.refresh()
-            toast.success('Cartelera eliminada')
+            toast.success('Producto eliminado')
             return response
 
         } catch (error) {

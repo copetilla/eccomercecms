@@ -2,44 +2,6 @@ import { supabaseClient } from "@/lib/supabase";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextRequest, { params }: { params: { productId: string } }) {
-
-    try {
-        const { getToken } = await auth()
-        const token = await getToken({ template: 'supabase' })
-        const supabase = await supabaseClient(token)
-
-        const body = await req.json()
-        const { urls } = body
-
-        if (!urls || !Array.isArray(urls)) {
-            return new NextResponse("Invalid URLs format", { status: 400 });
-        }
-
-        // Crear un array de objetos para insertar
-        const imageRecords = urls.map(url => ({
-            productId: params.productId,
-            url: url
-        }));
-
-        const { data, error } = await supabase
-            .from('ImageProduct')
-            .insert(imageRecords)
-
-        if (error) {
-            console.log(error)
-            return new NextResponse("Error creating Image product", { status: 500 });
-        }
-
-        console.log("Datos insertados:", data)
-
-        return NextResponse.json({ data })
-
-    } catch (error) {
-        console.log(error)
-        return new NextResponse("[ERROR_IMAGEPRODUCT]", { status: 500 });
-    }
-}
 
 export async function DELETE(req: Request, { params }: { params: { storeId: string, productId: string } }) {
     try {
@@ -128,7 +90,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { productId:
 
         // Obtener datos del body
         const body = await req.json();
-        const { name, price, isFeatured, isArchived } = body;
+        const { name, price, isFeatured, isArchived, categoryId } = body;
 
         // Validaciones opcionales
         if (!name && !price && !price) {
@@ -137,10 +99,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { productId:
 
         // Construir el objeto de actualización
         const updateFields: any = {};
-        if (name) updateFields.name = name;
-        if (price) updateFields.price = price;
-        if (isFeatured) updateFields.isFeatured = isFeatured;
-        if (isArchived) updateFields.isArchived = isArchived;
+        updateFields.name = name;
+        updateFields.price = price;
+        updateFields.isFeatured = isFeatured;
+        updateFields.isArchived = isArchived;
+        updateFields.categoryId = categoryId;
 
         const { data, error } = await supabase
             .from('Product')

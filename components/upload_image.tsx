@@ -5,16 +5,19 @@ import ImageCard from '@/components/image-card';
 import { useParams } from 'next/navigation';
 
 interface ImageUploaderProps {
-    setImagesUpload: (value: SetStateAction<File[]>) => void;
+    setImagesUpload: React.Dispatch<React.SetStateAction<File[]>>;
     productId?: string;
-    urlsDelete?: () => void
-    newImages?: () => void
+    urlsDelete: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-export const ImageUploader: React.FC<ImageUploaderProps> = ({ setImagesUpload, productId, urlsDelete, newImages }) => {
+interface ImageFile {
+    url: string;
+    name: string;
+}
+
+export const ImageUploader: React.FC<ImageUploaderProps> = ({ setImagesUpload, productId, urlsDelete }) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const [images, setImages] = useState<File[]>([]);
-    const [imagesUrl, setImagesUrl] = useState<any>([]);
+    const [imagesUrl, setImagesUrl] = useState<Set<ImageFile>>(new Set());
     const [loading, setLoading] = useState(false);
     const params = useParams();
 
@@ -71,12 +74,21 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ setImagesUpload, p
     };
 
     const DeleteImage = (file: { name: string, url: string }) => {
-        setImagesUpload(prev => prev.filter(image => image.name !== file.name));
+        if (file.name === file.url) {
+            urlsDelete(prev => [...prev, file.url]);
+            setImagesUrl(prev => {
+                const updatedUrls = new Set([...prev].filter(image => image.url !== file.url));
+                return updatedUrls;
+            });
+        } else {
 
-        setImagesUrl(prev => {
-            const updatedUrls = new Set([...prev].filter(image => image.url !== file.url));
-            return updatedUrls;
-        });
+            setImagesUpload(prev => prev.filter(image => image.name !== file.name));
+            setImagesUrl(prev => {
+                const updatedUrls = new Set([...prev].filter(image => image.url !== file.url));
+                return updatedUrls;
+            });
+        }
+
     };
 
     return (

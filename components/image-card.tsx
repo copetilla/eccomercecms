@@ -6,11 +6,11 @@ import { cn } from '@/lib/utils'
 
 
 interface ImageCardProps {
-    images: [{
+    images: {
         url: string;
         name: string
-    }]
-    DeleteImage: (src: string) => void
+    }[];
+    DeleteImage: ({ url, name }: { url: string, name: string }) => void
 }
 
 const ImageCard = ({ images, DeleteImage }: ImageCardProps) => {

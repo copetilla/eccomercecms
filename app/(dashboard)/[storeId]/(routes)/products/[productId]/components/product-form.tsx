@@ -18,6 +18,7 @@ import AlertModal from '@/components/modals/alert-modal'
 import { ImageUploader } from '@/components/upload_image'
 import { Checkbox } from '@/components/ui/checkbox'
 import SelectCategory from './selectCategory'
+import { v4 as uuidv4 } from 'uuid';
 
 interface BillboardFormProps {
     product: Product | null
@@ -41,9 +42,8 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
 
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [images, setImages] = useState([])
-    const [newImages, setNewImages] = useState([])
-    const [urlsDelete, setUrlsDelete] = useState([])
+    const [images, setImages] = useState<File[]>([])
+    const [urlsDelete, setUrlsDelete] = useState<string[]>([])
 
     const title = product ? "Editar producto" : "Crear producto";
     const description = product ? "Editar un producto" : "Añadira un nuevo producto";
@@ -61,27 +61,79 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
     });
 
     const onSubmit = async (data: ProductFormValues) => {
-
+        console.log(data)
         setLoading(true)
         if (product) {
 
             try {
 
-                //     const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
-                //         method: 'PATCH',
-                //         headers: {
-                //             'Content-Type': 'application/json',
-                //         },
-                //         body: JSON.stringify({ label: data.label, imageUrl: data.imageUrl })
-                //     })
+                //UPLOAD IMAGES
 
-                //     if (!response.ok) {
-                //         toast.error('Error al actualizar la cartelera')
-                //         return
-                //     }
-                //     router.push(`/${storeId}/billboards`)
-                //     router.refresh()
-                //     toast.success('¡Cartelera actualizada con éxito!')
+                if (images && images.length > 0) {
+                    console.log('ENTRO INSERTAR')
+
+                    const formData = new FormData();
+                    images.forEach((file) => {
+                        formData.append("files", file);
+                    });
+
+                    const response = await fetch(`/api/${storeId}/products/${productId}/images`, {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error("Error uploading files:", errorData.error);
+                        toast.error("Error al subir las imágenes.");
+                        return;
+                    }
+
+                }
+
+
+                //DELETE IMAGES
+
+                if (urlsDelete.length > 0) {
+                    console.log('ENTRO ELIMINAR')
+                    console.log(urlsDelete)
+                    const response = await fetch(`/api/${storeId}/products/${productId}/images`, {
+                        method: "DELETE",
+                        body: JSON.stringify({
+                            urlsDelete: urlsDelete
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        console.error("Error deleting images:", errorData.error);
+                        return
+                    }
+                }
+
+                const response = await fetch(`/api/${storeId}/products/${productId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: data.name,
+                        price: data.price,
+                        categoryId: data.categoryId,
+                        isFeatured: data.isFeatured,
+                        isArchived: data.isArchived,
+                        urlsDelete: urlsDelete,
+
+                    })
+                })
+
+                if (!response.ok) {
+                    toast.error('Error al actualizar el product')
+                    return
+                }
+                router.push(`/${storeId}/products`)
+                router.refresh()
+                toast.success('Producto actualizado con éxito!')
             } catch (error) {
                 console.log(error)
             } finally {
@@ -91,6 +143,8 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
 
         } else {
             try {
+
+                //CREATE PRODUCT
 
                 const response = await fetch(`/api/${storeId}/products/`, {
                     method: 'POST',
@@ -126,29 +180,11 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
                     body: formData,
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
+                if (!responseImage.ok) {
+                    const errorData = await responseImage.json();
                     console.error("Error uploading files:", errorData.error);
                     toast.error("Error al subir las imágenes.");
                     return;
-                }
-
-                const { uploadedFiles } = await responseImage.json(); // Verifica si el backend envía esto
-                console.log("Uploaded files URLs:", uploadedFiles);
-
-                const responseImageProduct = await fetch(`/api/${storeId}/products/${productId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        urls: uploadedFiles
-                    })
-                })
-
-                if (!response.ok) {
-                    toast.error('Error al crear el producto')
-                    return
                 }
 
                 router.push(`/${storeId}/products`)
@@ -220,7 +256,6 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
                 setImagesUpload={setImages}
                 productId={product?.id}
                 urlsDelete={setUrlsDelete}
-                newImages={setNewImages}
             />
 
             <Form {...form}>
@@ -345,8 +380,11 @@ const ProductForm: React.FC<BillboardFormProps> = ({ product }) => {
                     <Button disabled={loading} type='submit'>
                         {action}
                     </Button>
+                    <Button disabled={loading} onClick={() => console.log(urlsDelete)}>
+                        ver imagenes elimnar
+                    </Button>
                     <Button disabled={loading} onClick={() => console.log(images)}>
-                        ver imagenes
+                        ver imagenes poner
                     </Button>
                 </form>
             </Form>

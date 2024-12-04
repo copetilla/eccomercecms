@@ -41,11 +41,27 @@ export async function POST(req: NextRequest, { params }: { params: { productId: 
                 .getPublicUrl(filePath);
 
             if (publicUrlData) {
-                uploadedFiles.push(publicUrlData.publicUrl);
+                uploadedFiles.push({
+                    id: newUuid, // UUID
+                    url: publicUrlData.publicUrl, // URL pública
+                    productId: params.productId, // Asociar el producto
+                });
             }
         }
 
-        return NextResponse.json({ uploadedFiles }); // Responder con los URLs de los archivos subidos
+        if (uploadedFiles.length > 0) {
+            const { error: insertError } = await supabase
+                .from('ImageProduct')
+                .insert(uploadedFiles);
+
+            if (insertError) {
+                console.error('Error al insertar nuevas imágenes en la base de datos:', insertError);
+                return NextResponse.json({ error: 'Error al insertar nuevas imágenes' }, { status: 500 });
+            }
+        }
+
+
+        return new NextResponse("Creacion de imagenes exitosa", { status: 200 });
     } catch (error) {
         console.error("Error processing files:", error);
         return NextResponse.json(
@@ -81,21 +97,15 @@ export async function GET(req: NextRequest, { params }: { params: { productId: s
     }
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { productId: string } }) {
-
+export async function DELETE(req: NextRequest, { params }: { params: { productId: string } }) {
     try {
-        const body = await req.json(); // Parsear el body
-        const { urlsAdd, urlsDelete } = body;
-
-        if (!urlsAdd && !urlsDelete) {
-            return new NextResponse("No URLs provided", { status: 400 });
-        }
+        const body = await req.json();
+        const { urlsDelete } = body;
 
         const { getToken } = await auth();
         const token = await getToken({ template: 'supabase' });
         const supabase = await supabaseClient(token);
 
-        // **1. Eliminar URLs**
         if (urlsDelete && urlsDelete.length > 0) {
             const { data: imagesToDelete, error: selectError } = await supabase
                 .from('ImageProduct')
@@ -107,6 +117,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { productId:
                 console.error('Error al obtener las imágenes a eliminar:', selectError);
                 return NextResponse.json({ error: 'Error al obtener imágenes' }, { status: 500 });
             }
+            console.log('Resultado de la consulta:', imagesToDelete);
 
             if (imagesToDelete.length > 0) {
                 const filePaths = imagesToDelete.map(image => `${params.productId}/${image.id}`);
@@ -134,56 +145,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { productId:
                 }
             }
         }
-
-        // **2. Añadir URLs**
-        if (urlsAdd && urlsAdd.length > 0) {
-            const uploadedFiles = [];
-            for (const file of urlsAdd) {
-                const newUuid = uuidv4();
-                const filePath = `${params.productId}/${newUuid}`;
-
-                // Subir archivo al bucket
-                const { error: uploadError } = await supabase
-                    .storage
-                    .from('productImages')
-                    .upload(filePath, file, {
-                        cacheControl: '3600',
-                        upsert: false,
-                    });
-
-                if (uploadError) {
-                    console.error('Error al subir archivo:', uploadError);
-                    continue; // Pasar al siguiente archivo en caso de error
-                }
-
-                const { data: publicUrlData } = supabase
-                    .storage
-                    .from('productImages')
-                    .getPublicUrl(filePath);
-
-                if (publicUrlData) {
-                    uploadedFiles.push({
-                        productId: params.productId,
-                        url: publicUrlData.publicUrl,
-                    });
-                }
-            }
-
-            // Insertar registros en la tabla ImageProduct
-            if (uploadedFiles.length > 0) {
-                const { error: insertError } = await supabase
-                    .from('ImageProduct')
-                    .insert(uploadedFiles);
-
-                if (insertError) {
-                    console.error('Error al insertar nuevas imágenes en la base de datos:', insertError);
-                    return NextResponse.json({ error: 'Error al insertar nuevas imágenes' }, { status: 500 });
-                }
-            }
-        }
-
-        return new NextResponse("Actualización exitosa", { status: 200 });
+        return new NextResponse("Eliminacion exitosa de imagenes", { status: 200 });
     } catch (error) {
-
+        return new NextResponse("AQUI ESTA EL ERROR DIO MIO", { status: 500 });
     }
 }
