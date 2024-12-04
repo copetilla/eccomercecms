@@ -40,3 +40,28 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
     }
 }
 
+export async function GET(req: NextRequest, { params }: { params: { storeId: string } }) {
+
+    try {
+
+        const supabase = await supabaseClient()
+
+        const { data, error } = await supabase
+            .from('Product')
+            .select('*')
+            .eq('storeId', params.storeId)
+
+        if (error) {
+            console.log(error)
+            return new NextResponse("Error creating product", { status: 500 });
+        }
+
+        console.log("Datos insertados:", data)
+
+        return NextResponse.json({ data })
+
+    } catch (error) {
+        console.log(error)
+        return new NextResponse("[ERROR_PRODUCT]", { status: 500 });
+    }
+}

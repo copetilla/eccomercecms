@@ -36,3 +36,32 @@ export interface Product {
     updated_at: string;
     description: string;
 }
+
+export interface Product {
+    id: string;
+    storeId: string;
+    categoryId: string;
+    name: string;
+    price: number;
+    isFeatured: boolean;
+    isArchived: boolean;
+    created_at: string;
+    updated_at: string;
+    description: string;
+}
+
+export interface Order {
+    id: string,
+    storeId: string,
+    status: string,
+    total_amount: number
+}
+
+export interface OrderItems {
+    id: string,
+    orderId: string,
+    productId: string,
+    quantity: number,
+    unit_price: number,
+    total_price: number
+}
