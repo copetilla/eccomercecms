@@ -54,7 +54,12 @@ export interface Order {
     id: string,
     storeId: string,
     status: string,
-    total_amount: number
+    phone: string,
+    address: string,
+    total_amount: number,
+    created_at: string,
+    updated_at: string,
+    OrderItems: OrderItems[]
 }
 
 export interface OrderItems {
@@ -63,5 +68,7 @@ export interface OrderItems {
     productId: string,
     quantity: number,
     unit_price: number,
-    total_price: number
+    total_price: number,
+    created_at: string,
+    updated_at: string;
 }

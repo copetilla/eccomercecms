@@ -2,21 +2,37 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import CellAction from "./cell-action"
+import { OrderItems } from "@/types/page"
 
-export type BillboardColumn = {
+export type OrderColumn = {
     id: string
-    label: string
-    created_at: string
+    OrderItems: OrderItems[]
+    phone: string
+    total_amount: number
+    address: string
+    status: string
 }
 
-export const columns: ColumnDef<BillboardColumn>[] = [
+export const columns: ColumnDef<OrderColumn>[] = [
     {
-        accessorKey: "label",
-        header: "Etiqueta",
+        accessorKey: "OrderItems",
+        header: "Productos",
     },
     {
-        accessorKey: "created_at",
-        header: "Fecha de creación",
+        accessorKey: "phone",
+        header: "Teléfono",
+    },
+    {
+        accessorKey: "address",
+        header: "Dirección",
+    },
+    {
+        accessorKey: "total_amount",
+        header: "Total",
+    },
+    {
+        accessorKey: "status",
+        header: "Estado",
     },
     {
         id: "actions",
