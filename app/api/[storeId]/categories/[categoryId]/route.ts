@@ -81,3 +81,30 @@ export async function DELETE(req: Request, { params }: { params: { storeId: stri
 
     }
 }
+
+export async function GET(req: Request, { params }: { params: { categoryId: string } }) {
+
+    try {
+        const supabase = await supabaseClient();
+
+        const { data, error } = await supabase
+            .from('Category')
+            .select(`
+                *,
+                billboards (label, imageUrl)
+            `)
+            .eq('id', params.categoryId)
+            .single()
+
+        if (error) {
+            console.error(error);
+            return new NextResponse("Error fetching category", { status: 500 });
+        }
+
+        return NextResponse.json({ data });
+
+    } catch (error) {
+        console.log(error)
+        return new NextResponse("[ERROR_CATEGORY]", { status: 500 });
+    }
+}

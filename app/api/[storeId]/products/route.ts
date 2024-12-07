@@ -43,22 +43,38 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
 export async function GET(req: NextRequest, { params }: { params: { storeId: string } }) {
 
     try {
+        const supabase = await supabaseClient();
 
-        const supabase = await supabaseClient()
+        // Capturar parámetros de la URL
+        const { searchParams } = req.nextUrl;
+        const categoryId = searchParams.get('categoryId');
+        const isFeatured = searchParams.get('isFeatured');
 
-        const { data, error } = await supabase
+        let query = supabase
             .from('Product')
-            .select('*')
-            .eq('storeId', params.storeId)
+            .select(`
+                *,
+                ImageProduct (url),
+                Category (id, name)
+            `)
+            .eq('storeId', params.storeId);
 
-        if (error) {
-            console.log(error)
-            return new NextResponse("Error creating product", { status: 500 });
+        // Añadir filtros condicionales si existen en la query
+        if (categoryId) {
+            query = query.eq('categoryId', categoryId);
+        }
+        if (isFeatured) {
+            query = query.eq('isFeatured', isFeatured === 'true');
         }
 
-        console.log("Datos insertados:", data)
+        const { data, error } = await query;
 
-        return NextResponse.json({ data })
+        if (error) {
+            console.error(error);
+            return new NextResponse("Error fetching products with filters", { status: 500 });
+        }
+
+        return NextResponse.json({ data });
 
     } catch (error) {
         console.log(error)

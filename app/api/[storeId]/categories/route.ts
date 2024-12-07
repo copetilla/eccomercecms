@@ -42,10 +42,21 @@ export async function GET(req: Request, { params }: { params: { storeId: string 
             .eq('storeId', params.storeId)
 
         if (error) {
-            return new NextResponse("Error getting category", { status: 500 });
+            console.error("Error al obtener categorías:", error.message);
+            return NextResponse.json(
+                { message: "Error getting categories", error: error.message },
+                { status: 500 }
+            );
         }
 
-        return NextResponse.json({ data })
+        if (!data || data.length === 0) {
+            return NextResponse.json(
+                { message: "No categories found", data: [] },
+                { status: 404 }
+            );
+        }
+
+        return NextResponse.json({ data }, { status: 200 });
 
     } catch (error) {
         return new NextResponse("[ERROR_CATEGORY]", { status: 500 });

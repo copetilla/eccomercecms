@@ -124,3 +124,31 @@ export async function PATCH(req: NextRequest, { params }: { params: { productId:
         return new NextResponse('Internal error', { status: 500 });
     }
 }
+
+export async function GET(req: NextRequest, { params }: { params: { productId: string } }) {
+
+    try {
+        const supabase = await supabaseClient();
+
+        const { data, error } = await supabase
+            .from('Product')
+            .select(`
+                *,
+                ImageProduct (url),
+                Category (id,name)
+            `)
+            .eq('id', params.productId)
+            .single()
+
+        if (error) {
+            console.error(error);
+            return new NextResponse("Error fetching product", { status: 500 });
+        }
+
+        return NextResponse.json({ data });
+
+    } catch (error) {
+        console.log(error)
+        return new NextResponse("[ERROR_PRODUCT]", { status: 500 });
+    }
+}

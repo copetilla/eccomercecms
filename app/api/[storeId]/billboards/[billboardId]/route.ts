@@ -81,3 +81,25 @@ export async function DELETE(req: Request, { params }: { params: { storeId: stri
 
     }
 }
+
+export async function GET(req: Request, { params }: { params: { storeId: string, billboardId: string } }) {
+    try {
+
+        const supabase = await supabaseClient();
+
+        const { data, error } = await supabase
+            .from('billboards')
+            .select('*')
+            .eq('id', params.billboardId)
+            .single()
+
+        if (error) {
+            return new NextResponse("Error getting billboard", { status: 500 });
+        }
+
+        return NextResponse.json({ data })
+
+    } catch (error) {
+        return new NextResponse("[ERROR_BILLBOARD]", { status: 500 });
+    }
+}
