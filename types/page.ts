@@ -51,24 +51,31 @@ export interface Product {
 }
 
 export interface Order {
-    id: string,
-    storeId: string,
-    status: string,
-    phone: string,
-    address: string,
-    total_amount: number,
-    created_at: string,
-    updated_at: string,
-    OrderItems: OrderItems[]
+    id: string;
+    storeId: string;
+    status: string; // Estado del pedido (ej.: pending, completed)
+    phone: string; // Teléfono de contacto del cliente
+    address: string; // Dirección principal de envío
+    fullName: string; // Nombre completo del destinatario
+    city: string; // Ciudad del envío
+    province: string; // Provincia del envío
+    postalCode?: string; // Código postal (opcional si no aplica)
+    country: string; // País del envío
+    shippingMethod: string; // Método de envío seleccionado
+    payMethod: string; // Método de pago (ej.: SINPE, tarjeta de crédito)
+    total_amount: number; // Monto total del pedido
+    created_at: string;
+    updated_at: string;
+    orderItems: OrderItem[]; // Detalle de los productos pedidos
 }
 
-export interface OrderItems {
-    id: string,
-    orderId: string,
-    productId: string,
-    quantity: number,
-    unit_price: number,
-    total_price: number,
-    created_at: string,
+export interface OrderItem {
+    id: string;
+    orderId: string;
+    productId: string;
+    quantity: number;
+    unit_price: number;
+    total_price: number;
+    created_at: string;
     updated_at: string;
 }

@@ -19,7 +19,7 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
     const supabase = await supabaseClient(token);
 
     const { data, error } = await supabase
-        .from('Orders')
+        .from('Order')
         .select('*')
         .eq('storeId', params.storeId)
 

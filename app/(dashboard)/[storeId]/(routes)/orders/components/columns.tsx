@@ -6,7 +6,7 @@ import { OrderItems } from "@/types/page"
 
 export type OrderColumn = {
     id: string
-    OrderItems: OrderItems[]
+    OrderItem: OrderItems[]
     phone: string
     total_amount: number
     address: string
@@ -15,7 +15,7 @@ export type OrderColumn = {
 
 export const columns: ColumnDef<OrderColumn>[] = [
     {
-        accessorKey: "OrderItems",
+        accessorKey: "OrderItem",
         header: "Productos",
     },
     {
@@ -23,11 +23,15 @@ export const columns: ColumnDef<OrderColumn>[] = [
         header: "Teléfono",
     },
     {
+        accessorKey: "email",
+        header: "Correo",
+    },
+    {
         accessorKey: "address",
         header: "Dirección",
     },
     {
-        accessorKey: "total_amount",
+        accessorKey: "totalAmount",
         header: "Total",
     },
     {
