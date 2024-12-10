@@ -7,7 +7,7 @@ export async function PATCH(req: Request, { params }: { params: { storeId: strin
         const { userId, getToken } = await auth()
         const token = await getToken({ template: 'supabase' });
         const body = await req.json()
-        const { label, imageUrl } = body
+        const { label, imageUrl, idImage } = body
 
         if (!userId) {
             return new NextResponse('Unauthenticated', { status: 401 });
@@ -15,10 +15,6 @@ export async function PATCH(req: Request, { params }: { params: { storeId: strin
 
         if (!label) {
             return new NextResponse('Label is required', { status: 400 });
-        }
-
-        if (!imageUrl) {
-            return new NextResponse('Image is required', { status: 400 });
         }
 
         if (!params.storeId) {
@@ -29,7 +25,7 @@ export async function PATCH(req: Request, { params }: { params: { storeId: strin
 
         const { data, error } = await supabase
             .from('billboards')
-            .update({ label: label, imageUrl: imageUrl })
+            .update({ label: label, imageUrl: imageUrl, idImage: idImage })
             .eq('id', params.billboardId)
             .select()
 

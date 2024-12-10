@@ -16,6 +16,8 @@ import { Input } from '@/components/ui/input'
 import toast from 'react-hot-toast'
 import AlertModal from '@/components/modals/alert-modal'
 import { ImageUploader } from '@/components/upload_image'
+import { ImageUploaderBillboard } from '@/components/upload_image_billboard'
+import { auth } from '@clerk/nextjs/server'
 
 
 interface BillboardFormProps {
@@ -24,7 +26,6 @@ interface BillboardFormProps {
 
 const formSchema = z.object({
     label: z.string().min(1),
-    imageUrl: z.string().min(1)
 });
 
 type BillboardFormValues = z.infer<typeof formSchema>;
@@ -37,6 +38,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
 
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [image, setImage] = useState<File | null>(null)
 
     const title = billboard ? "Editar cartelera" : "Crear cartelera";
     const description = billboard ? "Editar una cartelera" : "Añadira una nueva cartelera";
@@ -45,8 +47,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     const form = useForm<BillboardFormValues>({
         resolver: zodResolver(formSchema),
         defaultValues: billboard || {
-            label: '',
-            imageUrl: ''
+            label: ''
         }
     });
 
@@ -56,18 +57,65 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
 
             try {
 
-                const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ label: data.label, imageUrl: data.imageUrl })
-                })
+                if (image) {
+                    const responseStorage = await fetch(`/api/billboard_background`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ id: billboard?.idImage })
+                    })
 
-                if (!response.ok) {
-                    toast.error('Error al actualizar la cartelera')
-                    return
+                    if (!responseStorage.ok) {
+                        console.log('error deleting storage')
+                        return
+                    }
+
+                    const formData = new FormData();
+                    formData.append("file", image);
+
+                    const responseImage = await fetch(`/api/billboard_background`, {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (!responseImage.ok) {
+                        const errorData = await responseImage.json();
+                        console.error("Error uploading files:", errorData.error);
+                        toast.error("Error al subir las imágenes.");
+                        return;
+                    }
+
+                    const imagen = await responseImage.json()
+
+                    const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ label: data.label, imageUrl: imagen.imageUrl, idImage: imagen.id })
+                    })
+
+                    if (!response.ok) {
+                        toast.error('Error al actualizar la cartelera')
+                        return
+                    }
+                } else {
+
+                    const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ label: data.label })
+                    })
+
+                    if (!response.ok) {
+                        toast.error('Error al actualizar la cartelera')
+                        return
+                    }
                 }
+
                 router.push(`/${storeId}/billboards`)
                 router.refresh()
                 toast.success('¡Cartelera actualizada con éxito!')
@@ -81,16 +129,40 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
         } else {
             try {
 
-                const response = await fetch(`/api/${storeId}/billboards/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ label: data.label, imageUrl: data.imageUrl })
-                })
+                if (image) {
 
-                if (!response.ok) {
-                    toast.error('Error al crear la cartelera')
+                    const formData = new FormData();
+                    formData.append("file", image);
+
+                    const responseImage = await fetch(`/api/billboard_background`, {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (!responseImage.ok) {
+                        const errorData = await responseImage.json();
+                        console.error("Error uploading files:", errorData.error);
+                        toast.error("Error al subir las imágenes.");
+                        return;
+                    }
+
+                    console.log(responseImage)
+                    const imagen = await responseImage.json()
+
+                    const response = await fetch(`/api/${storeId}/billboards/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ idImage: imagen.id, label: data.label, imageUrl: imagen.imageUrl })
+                    })
+
+                    if (!response.ok) {
+                        toast.error('Error al crear la cartelera')
+                        return
+                    }
+                } else {
+                    toast.error('Error, mínimo 1 imagens')
                     return
                 }
                 router.push(`/${storeId}/billboards`)
@@ -107,6 +179,19 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
     const onDelete = async () => {
         setLoading(true)
         try {
+
+            const responseStorage = await fetch(`/api/billboard_background`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: billboard?.idImage })
+            })
+
+            if (!responseStorage.ok) {
+                console.log('error deleting storage')
+                return
+            }
 
             const response = await fetch(`/api/${storeId}/billboards/${billboardId}`, {
                 method: 'DELETE',
@@ -156,36 +241,19 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
             </div>
 
             <Separator />
-
+            <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+                <ImageUploaderBillboard
+                    setImagesUpload={setImage}
+                    billboard={billboard}
+                />
+            </div>
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
                     className=' space-y-8 w-full'
                 >
-                    <div className='grid grid-cols-3 gap-8'>
 
-                        <FormField
-                            control={form.control}
-                            name='imageUrl'
-                            render={({ field }) => (
-                                <FormItem className=''>
-                                    <FormLabel>
-                                        Imagen
-                                    </FormLabel>
-                                    <FormControl className=''>
-                                        <ImageUploader
-                                            value={field.value}
-                                            onchange={(imageUrl) => field.onChange(imageUrl)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-
-                    </div>
-                    <div className='grid grid-cols-3 gap-8'>
+                    <div className='grid grid-cols-1 lg:grid-cols-3 gap-8'>
 
                         <FormField
                             control={form.control}
@@ -212,6 +280,12 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
                     </div>
                     <Button disabled={loading} type='submit'>
                         {action}
+                    </Button>
+                    <Button onClick={(e) => {
+                        e.preventDefault()
+                        console.log(image)
+                    }}>
+                        ver
                     </Button>
                 </form>
             </Form>

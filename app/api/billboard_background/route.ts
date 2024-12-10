@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
         // Guardar el public URL en la tabla
         const imageUrl = publicUrlData.publicUrl;
 
-        return NextResponse.json(imageUrl); // Responder con el nuevo ejemplo
+        return NextResponse.json({ imageUrl: imageUrl, id: newUuid }); // Responder con el nuevo ejemplo
     } catch (error) {
         return NextResponse.json(
             { error: 'Error procesando la solicitud' },
@@ -94,12 +94,14 @@ export async function DELETE(req: NextRequest) {
 
         const token = await getToken({ template: 'supabase' })
         const supabase = await supabaseClient(token)
-        const { fileName } = await req.json()
+        const { id } = await req.json()
+        const filePath = `${userId}/${id}`;
+        console.log(filePath)
 
         const { data, error } = await supabase
             .storage
             .from('billboards_background')
-            .remove(fileName)
+            .remove([filePath])
 
         if (error) {
             throw new Error('Error eliminando el archivo ', error)

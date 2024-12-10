@@ -9,11 +9,12 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
         const supabase = await supabaseClient(token)
 
         const body = await req.json()
-        const { label, imageUrl } = body
+        const { idImage, label, imageUrl } = body
 
         const { data, error } = await supabase
             .from('billboards')
             .insert([{
+                idImage: idImage,
                 storeId: params.storeId,
                 label: label,
                 imageUrl: imageUrl
