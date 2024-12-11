@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Plus } from 'lucide-react'
 import { Order } from '@/types/page'
 import { DataTable } from '@/components/ui/data-table'
-import { columns } from './columns'
+import { columns, OrderColumn } from './columns'
 import ApiList from '@/components/ui/api-list'
 
 interface OrderClientProps {

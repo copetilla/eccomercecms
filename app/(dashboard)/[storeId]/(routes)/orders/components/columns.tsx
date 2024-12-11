@@ -2,21 +2,26 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import CellAction from "./cell-action"
-import { OrderItems } from "@/types/page"
+import { Order, OrderItem } from "@/types/page"
 
 export type OrderColumn = {
     id: string
-    OrderItem: OrderItems[]
+    OrderItem: OrderItem[]
     phone: string
-    total_amount: number
+    totalAmount: number
     address: string
     status: string
 }
 
-export const columns: ColumnDef<OrderColumn>[] = [
+export const columns: ColumnDef<Order>[] = [
     {
         accessorKey: "OrderItem",
         header: "Productos",
+        cell: ({ row }) => row.original.OrderItem.length,
+    },
+    {
+        accessorKey: "fullName",
+        header: "Nombre",
     },
     {
         accessorKey: "phone",
@@ -27,8 +32,8 @@ export const columns: ColumnDef<OrderColumn>[] = [
         header: "Correo",
     },
     {
-        accessorKey: "address",
-        header: "Dirección",
+        accessorKey: "city",
+        header: "Ciudad",
     },
     {
         accessorKey: "totalAmount",

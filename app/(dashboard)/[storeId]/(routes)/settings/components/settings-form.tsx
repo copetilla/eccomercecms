@@ -17,13 +17,17 @@ import toast from 'react-hot-toast'
 import AlertModal from '@/components/modals/alert-modal'
 import ApiAlert from '@/components/ui/api-alert'
 import { useOrigin } from '@/hooks/use-origin'
+import BillboardSelect from './billboardSelect'
 
 interface SettingsFormProps {
     store: Store
 }
 
 const formSchema = z.object({
-    name: z.string().min(1)
+    name: z.string().min(1),
+    billboardId: z.string().min(1),
+    nameSINPE: z.string().min(1),
+    numberSINPE: z.string().min(1),
 });
 
 type SettingsFormValues = z.infer<typeof formSchema>;
@@ -132,12 +136,75 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ store }) => {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Nombre
+                                        Nombre de la tienda
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             disabled={loading}
                                             placeholder='Nombre de la tienda'
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='billboardId'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Cartelera
+                                    </FormLabel>
+                                    <FormControl>
+                                        <BillboardSelect
+                                            disabled={loading}
+                                            value={field.value}
+                                            onChange={(value) => {
+                                                console.log("Valor seleccionado:", value); // Imprime el valor
+                                                field.onChange(value); // Llama a la función original
+                                            }} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+
+                    </div>
+                    <div className='grid grid-cols-3 gap-8'>
+                        <FormField
+                            control={form.control}
+                            name='nameSINPE'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Nombre SINPE
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            disabled={loading}
+                                            placeholder='Nombre para el SINPE'
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name='numberSINPE'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>
+                                        Número SINPE
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            disabled={loading}
+                                            placeholder='Número para el SINPE'
                                             {...field}
                                         />
                                     </FormControl>

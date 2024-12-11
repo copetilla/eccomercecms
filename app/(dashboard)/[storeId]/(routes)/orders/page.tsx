@@ -20,13 +20,18 @@ const OrdersPage = async ({ params }: { params: { storeId: string } }) => {
 
     const { data, error } = await supabase
         .from('Order')
-        .select('*')
+        .select(`
+            *,
+            OrderItem (
+                *,
+                Product (*)
+            )
+        `)
         .eq('storeId', params.storeId)
 
     if (error) {
         console.log('ERROR LOADING Orders', error)
     }
-
     const safeData: Order[] = formatOrdersData(data || []);
 
     return (

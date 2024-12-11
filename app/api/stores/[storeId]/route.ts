@@ -7,7 +7,7 @@ export async function PATCH(req: Request, { params }: { params: { storeId: strin
         const { userId, getToken } = await auth()
         const token = await getToken({ template: 'supabase' });
         const body = await req.json()
-        const { name } = body
+        const { name, billboardId, nameSINPE, numberSINPE } = body
 
         if (!userId) {
             return new NextResponse('Unauthenticated', { status: 401 });
@@ -25,7 +25,7 @@ export async function PATCH(req: Request, { params }: { params: { storeId: strin
 
         const { data, error } = await supabase
             .from('stores')
-            .update({ name: name })
+            .update({ name: name, billboardId: billboardId, nameSINPE: nameSINPE, numberSINPE: numberSINPE })
             .eq('id', params.storeId)
             .select()
 

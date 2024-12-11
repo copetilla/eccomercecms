@@ -1,5 +1,6 @@
 export interface Store {
     id: string;
+    billboardId: string;
     name: string;
     user_id: string;
     created_at: string;
@@ -64,10 +65,10 @@ export interface Order {
     country: string; // País del envío
     shippingMethod: string; // Método de envío seleccionado
     payMethod: string; // Método de pago (ej.: SINPE, tarjeta de crédito)
-    total_amount: number; // Monto total del pedido
+    totalAmount: number; // Monto total del pedido
     created_at: string;
     updated_at: string;
-    orderItems: OrderItem[]; // Detalle de los productos pedidos
+    OrderItem: OrderItem[]; // Detalle de los productos pedidos
 }
 
 export interface OrderItem {
@@ -79,4 +80,5 @@ export interface OrderItem {
     total_price: number;
     created_at: string;
     updated_at: string;
+    Product: Product;
 }

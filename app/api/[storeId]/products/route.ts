@@ -49,6 +49,7 @@ export async function GET(req: NextRequest, { params }: { params: { storeId: str
         const { searchParams } = req.nextUrl;
         const categoryId = searchParams.get('categoryId');
         const isFeatured = searchParams.get('isFeatured');
+        const isArchived = searchParams.get('isArchived');
 
         let query = supabase
             .from('Product')
@@ -65,6 +66,9 @@ export async function GET(req: NextRequest, { params }: { params: { storeId: str
         }
         if (isFeatured) {
             query = query.eq('isFeatured', isFeatured === 'true');
+        }
+        if (isArchived != undefined) {
+            query = query.eq('isArchived', isFeatured === 'false');
         }
 
         const { data, error } = await query;
