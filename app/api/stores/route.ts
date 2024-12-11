@@ -74,32 +74,34 @@ export async function GET(req: Request) {
 }
 
 export async function getStore(userId: string, storeId?: string) {
-    const { getToken } = await auth()
-    const token = await getToken({ template: 'supabase' })
-    const supabase = await supabaseClient(token)
+    try {
+        const { getToken } = await auth();
+        const token = await getToken({ template: 'supabase' });
+        const supabase = await supabaseClient(token);
 
-    let query = supabase
-        .from('stores')
-        .select('*');
+        let query = supabase
+            .from('stores')
+            .select('*')
+            .eq('user_id', userId);
 
-    // Agrega el filtro de `userId`
-    query = query.eq('user_id', userId);
+        if (storeId) {
+            query = query.eq('id', storeId);
+        }
 
-    // Agrega el filtro de `storeId` solo si se proporciona
-    if (storeId) {
-        query = query.eq('id', storeId);
-    }
+        const { data, error } = storeId ? await query.single() : await query.limit(1).maybeSingle();
 
-    // Usa `single()` si estás buscando un solo resultado específico, o `limit(1)` para el caso general
-    const { data, error } = storeId ? await query.single() : await query.limit(1).maybeSingle();
+        if (error) {
+            console.error('Error fetching store:', error.message);
+            return null;
+        }
 
-    if (error) {
-        console.error('Error fetching store:', error.message);
+        return data;
+    } catch (error) {
+        console.error('Unexpected error in getStore:', error);
         return null;
     }
-
-    return data;
 }
+
 
 export async function getAllStoresUser(userId: string) {
     const { getToken } = await auth()
