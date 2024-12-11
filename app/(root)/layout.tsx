@@ -5,7 +5,7 @@ import { getStore } from "@/lib/storeService";
 export default async function SetupLayout({
     children
 }: { children: React.ReactNode }) {
-    const { userId, getToken } = await auth()
+    const { userId } = await auth()
 
     if (!userId) {
         redirect('/sign-in')

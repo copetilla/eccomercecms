@@ -4,8 +4,7 @@ import MainNav from '@/components/main-nav'
 import StoreSwitcher from '@/components/store-switcher'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import toast from 'react-hot-toast'
-import { getAllStoresUser } from '@/app/api/stores/route'
+import { getAllStoresUser } from '@/lib/storeService'
 
 const Navbar = async () => {
     const { userId } = await auth()
