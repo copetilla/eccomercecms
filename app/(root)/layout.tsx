@@ -1,6 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { getStore } from "../api/stores/route";
+import { getStore } from "@/lib/storeService";
 
 export default async function SetupLayout({
     children
