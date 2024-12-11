@@ -1,4 +1,4 @@
-import { getStore } from "@/app/api/stores/route";
+import { getStore } from "@/lib/storeService";
 import Navbar from "@/components/navbar";
 import { auth } from "@clerk/nextjs/server"
 import { redirect } from "next/navigation";
