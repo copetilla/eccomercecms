@@ -3,14 +3,7 @@ import { format } from 'date-fns';
 import CategoryClient from './components/category-client';
 import { auth } from '@clerk/nextjs/server';
 import { supabaseClient } from '@/lib/supabase';
-import { Category, Billboard } from '@/types/page';
-
-const formatCategoryData = (categories: Category[]): Category[] =>
-    categories.map((category) => ({
-        ...category,
-        created_at: format(new Date(category.created_at), 'MMMM do, yyyy HH:mm'),
-        updated_at: format(new Date(category.updated_at), 'MMMM do, yyyy HH:mm'),
-    }));
+import { Category } from '@/types/page';
 
 const CategoryPage = async ({ params }: { params: { storeId: string } }) => {
     const { getToken } = await auth();

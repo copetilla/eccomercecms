@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { OrderColumn } from "./columns";
 import {
     DropdownMenu,
     DropdownMenuContent,

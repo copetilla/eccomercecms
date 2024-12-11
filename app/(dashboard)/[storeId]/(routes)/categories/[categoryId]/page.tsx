@@ -1,6 +1,5 @@
 import { supabaseClient } from '@/lib/supabase'
 import { auth } from '@clerk/nextjs/server'
-import { redirect } from 'next/navigation'
 import React from 'react'
 import CategoryForm from './components/category-form'
 

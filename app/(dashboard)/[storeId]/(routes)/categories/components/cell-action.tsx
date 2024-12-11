@@ -5,7 +5,7 @@ import { CategoryColumn } from './columns'
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { Copy, Delete, Edit, MoreHorizontal, Trash } from 'lucide-react'
+import { Copy, Edit, MoreHorizontal, Trash } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useParams, useRouter } from 'next/navigation'
 import AlertModal from '@/components/modals/alert-modal'

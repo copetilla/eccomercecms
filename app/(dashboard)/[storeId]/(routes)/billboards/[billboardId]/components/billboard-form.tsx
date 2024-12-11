@@ -15,10 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import toast from 'react-hot-toast'
 import AlertModal from '@/components/modals/alert-modal'
-import { ImageUploader } from '@/components/upload_image'
 import { ImageUploaderBillboard } from '@/components/upload_image_billboard'
-import { auth } from '@clerk/nextjs/server'
-
 
 interface BillboardFormProps {
     billboard: Billboard | null
@@ -211,6 +208,7 @@ const BillboardForm: React.FC<BillboardFormProps> = ({ billboard }) => {
             return response
 
         } catch (error) {
+            console.log(error)
             toast.error('Cartelera eliminada sin éxito')
         } finally {
             setLoading(false)

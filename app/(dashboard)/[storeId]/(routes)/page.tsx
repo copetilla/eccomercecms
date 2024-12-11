@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Heading from "@/components/ui/heading";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrencyToColones } from "@/lib/utils";
-import { Order } from "@/types/page";
 import { CreditCard, Package } from "lucide-react";
 
 interface DashboardPageProps {

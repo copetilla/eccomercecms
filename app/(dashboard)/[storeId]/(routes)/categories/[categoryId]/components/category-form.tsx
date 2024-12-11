@@ -126,6 +126,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ category }) => {
             return response
 
         } catch (error) {
+            console.log(error)
             toast.error('Error al elminar la categoria')
         } finally {
             setLoading(false)
